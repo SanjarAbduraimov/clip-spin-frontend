@@ -43,8 +43,11 @@ export const useCreateProjectFromUrl = () => {
       url: string;
       source: string;
     }) => createProjectFromUrl(name, url, source),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    onSuccess: (response: Project) => {
+      queryClient.setQueryData(["projects"], (prev: Project[]) => [
+        ...prev,
+        response,
+      ]);
     },
   });
 };
