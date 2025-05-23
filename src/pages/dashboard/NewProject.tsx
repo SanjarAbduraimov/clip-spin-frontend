@@ -88,6 +88,8 @@ const NewProject = () => {
         source,
       });
 
+      form.reset();
+
       toast({
         title: "Project created",
         description: "Your project has been created and is being processed",
