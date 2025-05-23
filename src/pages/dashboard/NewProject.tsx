@@ -75,11 +75,11 @@ const NewProject = () => {
       let source = "";
 
       if (url.includes("youtube.com") || url.includes("youtu.be")) {
-        source = "Youtube";
+        source = "YouTube";
       } else if (url.includes("instagram.com")) {
         source = "Instagram";
       } else if (url.includes("tiktok.com") || url.includes("vm.tiktok.com")) {
-        source = "Tiktok";
+        source = "TikTok";
       }
 
       await createProjectMutation.mutateAsync({
