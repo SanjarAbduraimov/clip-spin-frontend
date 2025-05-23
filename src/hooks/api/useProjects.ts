@@ -1,15 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
-  getProjects,
-  getProject,
   createProjectFromUrl,
-  uploadVideoFile,
-  updateProject,
-  generateVideo,
   deleteProject,
   duplicateProject,
+  generateVideo,
+  getProjects,
+  updateProject,
+  uploadVideoFile,
 } from "@/api";
+import { mockProjects } from "@/api/mockData";
 import { Project } from "@/types";
 
 // Hook to fetch all projects
@@ -22,11 +22,9 @@ export const useProjects = () => {
 
 // Hook to fetch a single project by ID
 export const useProject = (id: string) => {
-  return useQuery({
-    queryKey: ["project", id],
-    queryFn: () => getProject(id),
-    enabled: !!id,
-  });
+  const queryClient = useQueryClient();
+
+  return queryClient.getQueryData<Project>(["project", id]) || mockProjects[0];
 };
 
 // Hook to create a new project from URL
