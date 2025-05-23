@@ -1,5 +1,6 @@
 import { Project } from "@/types";
 
+import axiosInstance from "./axios";
 import { mockProjects } from "./mockData";
 
 // Get all projects for the current user
@@ -26,27 +27,18 @@ export const getProject = async (id: string) => {
 };
 
 // Create a new project from URL
-export const createProjectFromUrl = async (name: string, url: string) => {
-  return new Promise<Project>((resolve) => {
-    setTimeout(() => {
-      const newProject: Project = {
-        id: Math.random().toString(36).substr(2, 9),
-        name,
-        status: "processing",
-        createdAt: new Date().toISOString(),
-        sourceUrl: url,
-        sourceType: "instagram",
-        outputSettings: {
-          resolution: "1080p",
-          aspectRatio: "16:9",
-          format: "MP4",
-          audioQuality: "high",
-        },
-      };
-      mockProjects.push(newProject);
-      resolve({ ...newProject });
-    }, 1500);
-  });
+export const createProjectFromUrl = async (
+  name: string,
+  url: string,
+  source: string,
+): Promise<Project> => {
+  return axiosInstance
+    .post<Project>("/webhook/start-analysis", {
+      "Project Name": name,
+      "Content URL": url,
+      Source: source,
+    })
+    .then((response) => response.data);
 };
 
 // Upload a video file and create a project

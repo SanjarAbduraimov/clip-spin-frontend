@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create an Axios instance with default configuration
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "https://api.clipspin.com/v1",
+  baseURL: "https://innovasaleslab.app.n8n.cloud/",
   headers: {
     "Content-Type": "application/json",
   },

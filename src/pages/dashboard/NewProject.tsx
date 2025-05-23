@@ -70,9 +70,22 @@ const NewProject = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      // Extract source platform from URL
+      const { url, name } = values;
+      let source = "";
+
+      if (url.includes("youtube.com") || url.includes("youtu.be")) {
+        source = "Youtube";
+      } else if (url.includes("instagram.com")) {
+        source = "Instagram";
+      } else if (url.includes("tiktok.com") || url.includes("vm.tiktok.com")) {
+        source = "Tiktok";
+      }
+
       await createProjectMutation.mutateAsync({
-        name: values.name,
-        url: values.url,
+        name,
+        url,
+        source,
       });
 
       toast({

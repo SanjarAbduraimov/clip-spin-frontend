@@ -34,8 +34,15 @@ export const useCreateProjectFromUrl = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ name, url }: { name: string; url: string }) =>
-      createProjectFromUrl(name, url),
+    mutationFn: ({
+      name,
+      url,
+      source,
+    }: {
+      name: string;
+      url: string;
+      source: string;
+    }) => createProjectFromUrl(name, url, source),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
