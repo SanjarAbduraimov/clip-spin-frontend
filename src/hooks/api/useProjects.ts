@@ -24,7 +24,11 @@ export const useProjects = () => {
 export const useProject = (id: string) => {
   const queryClient = useQueryClient();
 
-  return queryClient.getQueryData<Project>(["project", id]) || mockProjects[0];
+  return (
+    queryClient
+      .getQueryData<Project[]>(["projects"])
+      ?.find((project) => project.id === id) || mockProjects[0]
+  );
 };
 
 // Hook to create a new project from URL
