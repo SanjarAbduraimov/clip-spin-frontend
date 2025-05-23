@@ -9,7 +9,6 @@ lerna-debug.log*
 
 node_modules
 dist
-storybook-static
 dist-ssr
 *.local
 
@@ -24,4 +23,3 @@ dist-ssr
 *.sln
 *.sw?
 
-*storybook.log

@@ -1,11 +1,17 @@
-# React + TypeScript + Vite
+# Clip Spin: Video Transcription & Regeneration Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project Overview
 
-Currently, two official plugins are available:
+Clip Spin is a web application that enables users to extract transcriptions from existing videos and generate new videos based on those transcriptions using either AI-generated avatars or real human presenters. This tool helps content creators repurpose content across platforms, create multilingual versions, or update visuals while preserving the original message.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
+
+- **Video Source Input**: Support for URLs from YouTube, TikTok, Instagram, and direct video file uploads (MP4, MOV, AVI formats)
+- **Transcription Process**: Automatic language detection with timestamps synchronized with original video
+- **Transcription Editing**: Edit capability for correcting errors in transcription
+- **Presenter Selection**: Choose between AI-generated avatars or real human presenters
+- **Output Customization**: Resolution options (720p, 1080p, 4K), aspect ratio options (16:9, 9:16, 1:1, 4:5), and video delivery format (MP4, MOV)
+- **Project Management**: Dashboard to track all current and past projects with status indicators
 
 ## Expanding the ESLint configuration
 

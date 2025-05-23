@@ -5,4 +5,5 @@ export {
   SheetFooter,
   SheetHeader,
   SheetTitle,
+  SheetTrigger,
 } from "./Sheet";

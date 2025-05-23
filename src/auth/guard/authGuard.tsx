@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import { useRouter } from "@/hooks/useRouter";
-import { paths } from "@/routes/paths";
 
 import { useAuthContext } from "../hooks/useAuthContext";
 
 const loginPaths: Record<string, string> = {
-  jwt: paths.auth.jwt.login,
+  jwt: "/login",
 };
 
 type Props = {

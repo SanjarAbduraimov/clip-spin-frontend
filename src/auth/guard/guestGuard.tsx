@@ -4,7 +4,6 @@ import React, { useCallback, useEffect } from "react";
 
 import { useRouter } from "@/hooks/useRouter";
 import { useSearchParams } from "@/hooks/useSearchParams";
-import { paths } from "@/routes/paths";
 
 import { useAuthContext } from "../hooks/useAuthContext";
 
@@ -23,7 +22,7 @@ function Container({ children }: Props) {
 
   const searchParams = useSearchParams();
 
-  const returnTo = searchParams.get("returnTo") || paths.dashboard.root;
+  const returnTo = searchParams.get("returnTo") || "/";
 
   const { authenticated } = useAuthContext();
 

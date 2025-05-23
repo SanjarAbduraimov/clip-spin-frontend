@@ -1,4 +1,3 @@
-import { paths } from "@/routes/paths";
 import http from "@/services/api";
 
 function jwtDecode(token: string) {
@@ -40,7 +39,7 @@ export const tokenExpired = (exp: number) => {
   expiredTimer = setTimeout(() => {
     localStorage.removeItem("access_token");
 
-    window.location.href = paths.auth.jwt.login;
+    window.location.href = "/login";
   }, timeLeft);
 };
 

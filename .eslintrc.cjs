@@ -4,7 +4,6 @@ module.exports = {
     "airbnb-typescript",
     "plugin:import/typescript",
     "prettier",
-    "plugin:storybook/recommended"
   ],
   parserOptions: {
     ecmaVersion: "latest",

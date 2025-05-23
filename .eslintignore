@@ -2,7 +2,6 @@
 build/*
 dist/*
 public/*
-storybook-static/*
 **/out/*
 **/.next/*
 **/node_modules/*
