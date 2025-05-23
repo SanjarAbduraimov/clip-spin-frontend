@@ -82,7 +82,6 @@ const TranscriptionReview = () => {
     try {
       await exportTranscriptionMutation.mutateAsync({
         projectId,
-        format: "txt",
       });
     } catch (error) {
       toast({
