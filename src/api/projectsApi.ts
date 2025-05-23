@@ -1,4 +1,4 @@
-import { Project } from "@/types";
+import { mapResponseToProject, Project, ProjectCreateResponse } from "@/types";
 
 import axiosInstance from "./axios";
 import { mockProjects } from "./mockData";
@@ -33,12 +33,12 @@ export const createProjectFromUrl = async (
   source: string,
 ): Promise<Project> => {
   return axiosInstance
-    .post<Project>("/webhook/start-analysis", {
+    .post<ProjectCreateResponse>("/webhook/start-analysis", {
       "Project Name": name,
       "Content URL": url,
       Source: source,
     })
-    .then((response) => response.data);
+    .then((response) => mapResponseToProject(response.data));
 };
 
 // Upload a video file and create a project
@@ -51,7 +51,7 @@ export const uploadVideoFile = async (name: string, file: File) => {
         status: "processing",
         createdAt: new Date().toISOString(),
         sourceFile: file.name,
-        sourceType: "upload",
+        sourceType: "TikTok",
         outputSettings: {
           resolution: "1080p",
           aspectRatio: "16:9",

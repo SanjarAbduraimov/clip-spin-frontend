@@ -8,7 +8,7 @@ export const mockProjects: Project[] = [
     status: "complete",
     createdAt: new Date().toISOString(),
     sourceUrl: "https://www.youtube.com/watch?v=example1",
-    sourceType: "youtube",
+    sourceType: "YouTube",
     transcription: {
       id: "t1",
       text: "This is a sample transcription for the product demo video.",
@@ -37,7 +37,7 @@ export const mockProjects: Project[] = [
     status: "processing",
     createdAt: new Date(Date.now() - 86400000).toISOString(),
     sourceUrl: "https://www.tiktok.com/@example/video/123456",
-    sourceType: "tiktok",
+    sourceType: "TikTok",
     transcription: {
       id: "t2",
       text: "Sample transcription for marketing video.",
@@ -64,7 +64,7 @@ export const mockProjects: Project[] = [
     status: "queued",
     createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
     sourceUrl: "https://www.instagram.com/p/example-post/",
-    sourceType: "instagram",
+    sourceType: "Instagram",
     presenterSettings: {
       type: "ai",
       presenterId: "ai-1",
@@ -82,7 +82,7 @@ export const mockProjects: Project[] = [
     status: "failed",
     createdAt: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
     sourceFile: "product-walkthrough.mp4",
-    sourceType: "upload",
+    sourceType: "TikTok",
     transcription: {
       id: "t4",
       text: "Welcome to our product walkthrough. Today we will show you how to use our new software.",
@@ -111,7 +111,7 @@ export const mockProjects: Project[] = [
     createdAt: new Date(Date.now() - 345600000).toISOString(), // 4 days ago
     completedAt: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
     sourceUrl: "https://www.youtube.com/watch?v=example2",
-    sourceType: "youtube",
+    sourceType: "YouTube",
     transcription: {
       id: "t5",
       text: "Check out our latest features! We have added new tools to help you create amazing videos.",
