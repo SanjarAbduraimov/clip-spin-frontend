@@ -60,13 +60,8 @@ export const useGenerateTranscription = () => {
 // Hook to export transcription
 export const useExportTranscription = () => {
   return useMutation({
-    mutationFn: ({
-      projectId,
-      format = "txt",
-    }: {
-      projectId: string;
-      format?: "txt";
-    }) => exportTranscription(projectId, format),
+    mutationFn: ({ projectId }: { projectId: string }) =>
+      exportTranscription(projectId),
     onSuccess: (blob) => {
       // Create a download link for the exported file
       const url = window.URL.createObjectURL(blob);
