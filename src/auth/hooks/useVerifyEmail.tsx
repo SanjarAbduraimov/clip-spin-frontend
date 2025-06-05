@@ -1,4 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import * as axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
