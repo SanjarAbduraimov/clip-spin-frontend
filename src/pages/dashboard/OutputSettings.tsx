@@ -20,7 +20,7 @@ import {
   CardTitle,
 } from "@/components/Card";
 import { Skeleton } from "@/components/Skeleton";
-import { useGenerateVideo, useProject, useUpdateProject } from "@/hooks/api";
+import { useProject, useUpdateProject } from "@/hooks/api";
 import { useToast } from "@/hooks/useToast";
 import { AspectRatio, AudioQuality, Resolution, VideoFormat } from "@/types";
 
@@ -36,7 +36,6 @@ const OutputSettings = () => {
 
   const { data: project, isLoading } = useProject(projectId || "");
   const updateProjectMutation = useUpdateProject();
-  const generateVideoMutation = useGenerateVideo();
 
   // Initialize form with existing project settings if available
   useEffect(() => {
@@ -64,9 +63,6 @@ const OutputSettings = () => {
           },
         },
       });
-
-      // Then start the video generation process
-      await generateVideoMutation.mutateAsync(projectId);
 
       toast({
         title: "Video generation started",
@@ -299,10 +295,7 @@ const OutputSettings = () => {
             <CardFooter className="flex justify-end">
               <Button
                 onClick={handleSaveAndGenerate}
-                disabled={
-                  updateProjectMutation.isPending ||
-                  generateVideoMutation.isPending
-                }
+                disabled={updateProjectMutation.isPending}
               >
                 <Play size={16} className="mr-2" />
                 Generate Video
