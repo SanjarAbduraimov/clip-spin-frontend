@@ -1,6 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as axios from "axios";
+import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -11,20 +9,35 @@ import { Types } from "../types";
 
 import { useAuthContext } from "./useAuthContext";
 
-export const useVerifyEmail = () => {
+interface SignInEmailResponse {
+  data: {
+    access_token: string;
+  };
+}
+
+export const useVerifyEmail = (): UseMutationResult<
+  SignInEmailResponse,
+  Error,
+  {
+    email: string;
+    code: number;
+    code_hash: string;
+  },
+  unknown
+> => {
   const navigate = useNavigate();
 
   const { dispatch } = useAuthContext();
 
   return useMutation({
     onSuccess: (res) => {
-      localStorage.setItem(STORAGE_KEY, res.data.data.access_token);
+      localStorage.setItem(STORAGE_KEY, res.data.access_token);
 
       dispatch({
         type: Types.INITIAL,
         payload: {
           user: {
-            accessToken: res.data.data.access_token,
+            accessToken: res.data.access_token,
           },
         },
       });
@@ -43,10 +56,12 @@ export const useVerifyEmail = () => {
       code: number;
       code_hash: string;
     }) =>
-      http.post<{
-        data: {
-          access_token: string;
-        };
-      }>(endpoints.auth.verify_email, { email, code, code_hash }),
+      http
+        .post<{
+          data: {
+            access_token: string;
+          };
+        }>(endpoints.auth.verify_email, { email, code, code_hash })
+        .then((res) => res.data),
   });
 };

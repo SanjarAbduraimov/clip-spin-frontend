@@ -1,17 +1,24 @@
-import { useMutation } from "@tanstack/react-query";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as axios from "axios";
+import { useMutation, UseMutationResult } from "@tanstack/react-query";
 
 import http, { endpoints } from "@/services/api";
 
-export const useAuthSignInEmail = () => {
-  return useMutation({
+interface SignInEmailResponse {
+  data: {
+    code: number;
+    code_hash: string;
+  };
+}
+
+export const useAuthSignInEmail = (): UseMutationResult<
+  SignInEmailResponse,
+  Error,
+  string,
+  unknown
+> => {
+  return useMutation<SignInEmailResponse, Error, string>({
     mutationFn: (email: string) =>
-      http.post<{
-        data: {
-          code: number;
-          code_hash: string;
-        };
-      }>(endpoints.auth.sign_in_with_email, { email }),
+      http
+        .post<SignInEmailResponse>(endpoints.auth.sign_in_with_email, { email })
+        .then((res) => res.data),
   });
 };

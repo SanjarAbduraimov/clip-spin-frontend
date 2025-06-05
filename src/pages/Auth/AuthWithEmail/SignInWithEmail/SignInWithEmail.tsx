@@ -42,8 +42,8 @@ export const SignInWithEmail = () => {
     try {
       const response = await mutateAsync(formData.email);
       setEmailResponse({
-        code: response.data.data.code,
-        codeHash: response.data.data.code_hash,
+        code: response.data.code,
+        codeHash: response.data.code_hash,
         email: formData.email,
       });
     } catch (error) {
