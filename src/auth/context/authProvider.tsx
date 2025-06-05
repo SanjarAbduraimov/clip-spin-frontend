@@ -59,7 +59,7 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
   return state;
 };
 
-const STORAGE_KEY = "access_token";
+export const STORAGE_KEY = "access_token";
 
 type Props = {
   children: React.ReactNode;
@@ -73,8 +73,10 @@ export function AuthProvider({ children }: Props) {
 
     if (accessToken) {
       try {
-        const { data } = await http.get(endpoints.auth.me);
-        const { user } = data;
+        const { data } = await http.get<{
+          data: { email: string; _id: string };
+        }>(endpoints.auth.me);
+        const { data: user } = data;
 
         dispatch({
           type: Types.INITIAL,

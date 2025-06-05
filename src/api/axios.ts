@@ -1,8 +1,11 @@
 import axios from "axios";
 
+import { STORAGE_KEY } from "@/auth/context/authProvider";
+import { config } from "@/constants/config";
+
 // Create an Axios instance with default configuration
 const axiosInstance = axios.create({
-  baseURL: "https://innovasaleslab.app.n8n.cloud/",
+  baseURL: config.apiBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },
@@ -11,8 +14,9 @@ const axiosInstance = axios.create({
 
 // Add a request interceptor to include auth token
 axiosInstance.interceptors.request.use(
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   (config) => {
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem(STORAGE_KEY);
     if (token) {
       // eslint-disable-next-line no-param-reassign
       config.headers.Authorization = `Bearer ${token}`;
@@ -35,7 +39,7 @@ axiosInstance.interceptors.response.use(
     // Handle authentication errors
     if (response && response.status === 401) {
       // Clear auth token and redirect to login
-      localStorage.removeItem("auth_token");
+      localStorage.removeItem(STORAGE_KEY);
       window.location.href = "/auth/sign-in";
     }
 

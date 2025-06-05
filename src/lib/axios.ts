@@ -57,7 +57,7 @@ export const endpoints = {
   calendar: "/api/calendar",
   auth: {
     me: "/admin/me",
-    login: "/auth/admin/signin",
+    login: "/auth/admin/sign-in",
     register: "/api/auth/register",
   },
   mail: {

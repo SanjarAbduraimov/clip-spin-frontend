@@ -1,16 +1,17 @@
-import { formatDistanceToNow } from "date-fns";
 import {
   ArrowLeft,
   Clock,
   Copy,
   Download,
   Edit,
+  EyeIcon,
   Share2,
   Trash2,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { Badge, BadgeProps } from "@/components/Badge";
+import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
 import {
   Card,
@@ -25,11 +26,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/DropdownMenu";
+import { PageLoading } from "@/components/PageLoading";
 import { Skeleton } from "@/components/Skeleton";
 import { useDeleteProject, useDuplicateProject, useProject } from "@/hooks/api";
 import { useToast } from "@/hooks/useToast";
 import { formatDuration } from "@/lib/utils";
-import { ProjectStatus } from "@/types";
+import {
+  ProjectProgressLabels,
+  ProjectStatus,
+  ProjectStatusColors,
+  ProjectStatusLabels,
+} from "@/types";
 
 // Check component for showing completed steps
 const Check = ({ size }: { size: number }) => (
@@ -47,13 +54,6 @@ const Check = ({ size }: { size: number }) => (
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
-
-const statusColorsVariants: Record<ProjectStatus, BadgeProps["variant"]> = {
-  queued: "outline-warning",
-  processing: "outline-primary",
-  complete: "outline-success",
-  failed: "outline-error",
-};
 
 const ProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -97,25 +97,20 @@ const ProjectDetail = () => {
   const handleDuplicateProject = () => {
     if (!projectId || !project) return;
 
-    duplicateProjectMutation.mutate(
-      { id: projectId, newName: `${project.name} (Copy)` },
-      {
-        onSuccess: () => {
-          toast({
-            title: "Project duplicated",
-            description: "The project has been duplicated successfully",
-          });
-        },
-        onError: () => {
-          toast({
-            title: "Error",
-            description: "Failed to duplicate the project. Please try again.",
-            variant: "destructive",
-          });
-        },
-      },
-    );
+    duplicateProjectMutation.mutate(project);
   };
+
+  if (project?.status === "pending") {
+    return (
+      <PageLoading
+        text={
+          project.progress
+            ? `${ProjectProgressLabels[project.progress]}...`
+            : "Your video is in queue"
+        }
+      />
+    );
+  }
 
   if (isLoading) {
     return (
@@ -163,15 +158,9 @@ const ProjectDetail = () => {
         <div>
           <h1 className="text-3xl font-bold">{project.name}</h1>
           <div className="mt-2 flex items-center gap-3">
-            <Badge size="sm" variant={statusColorsVariants[project.status]}>
-              {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+            <Badge size="sm" variant={ProjectStatusColors[project.status]}>
+              {ProjectStatusLabels[project.status]}
             </Badge>
-            <span className="text-sm text-gray-500">
-              Created{" "}
-              {formatDistanceToNow(new Date(project.createdAt), {
-                addSuffix: true,
-              })}
-            </span>
           </div>
         </div>
         <div className="ml-auto">
@@ -204,25 +193,29 @@ const ProjectDetail = () => {
             </CardHeader>
             <CardContent>
               {/* Render video preview based on project state */}
-              {project.status === "complete" && project.outputUrl && (
-                <div className="aspect-video overflow-hidden rounded-lg bg-black">
-                  <video
-                    src={project.outputUrl}
-                    controls
-                    className="h-full w-full"
-                  >
-                    <track kind="captions" src="" label="English" />
-                  </video>
-                </div>
-              )}
+              {project.status === ProjectStatus.COMPLETED &&
+                project.outputUrl && (
+                  <div className="aspect-video overflow-hidden rounded-lg bg-black">
+                    <video
+                      src={project.outputUrl}
+                      controls
+                      autoPlay
+                      className="h-full w-full"
+                    >
+                      <track kind="captions" src="" label="English" />
+                    </video>
+                  </div>
+                )}
 
               {/* Show source video if available and project is not complete or has no output URL */}
-              {(project.status !== "complete" || !project.outputUrl) &&
+              {(project.status !== ProjectStatus.COMPLETED ||
+                !project.outputUrl) &&
                 (project.sourceUrl || project.sourceFile) && (
                   <div className="aspect-video overflow-hidden rounded-lg bg-black">
                     <video
                       src={project.sourceUrl || project.sourceFile}
                       controls
+                      autoPlay
                       className="h-full w-full"
                     >
                       <track kind="captions" src="" label="English" />
@@ -239,11 +232,29 @@ const ProjectDetail = () => {
                   </div>
                 )}
             </CardContent>
-            {project.status === "complete" && (
+            {project.status === ProjectStatus.COMPLETED && (
               <CardFooter className="flex justify-end gap-2">
-                <Button variant="outline">
-                  <Download size={16} className="mr-2" />
-                  Download
+                <Button variant="outline" asChild>
+                  <a
+                    href={project.sourceUrl}
+                    download
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <EyeIcon size={16} className="mr-2" />
+                    Original
+                  </a>
+                </Button>
+                <Button variant="outline" asChild>
+                  <a
+                    href={project.outputUrl}
+                    download
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Download size={16} className="mr-2" />
+                    Download
+                  </a>
                 </Button>
                 <Button variant="outline">
                   <Share2 size={16} className="mr-2" />
@@ -270,7 +281,7 @@ const ProjectDetail = () => {
               </CardHeader>
               <CardContent>
                 <div className="max-h-[300px] overflow-y-auto whitespace-pre-wrap rounded-lg bg-gray-50 p-4">
-                  {project.transcription.text}
+                  <ReactMarkdown>{project.transcription.text}</ReactMarkdown>
                 </div>
               </CardContent>
             </Card>
@@ -327,31 +338,16 @@ const ProjectDetail = () => {
                 </div>
               )}
 
-              {project.outputSettings && (
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">
-                    Output Settings
-                  </h3>
-                  <div className="mt-1 space-y-1">
-                    <p>Resolution: {project.outputSettings.resolution}</p>
-                    <p>Aspect Ratio: {project.outputSettings.aspectRatio}</p>
-                    <p>Format: {project.outputSettings.format}</p>
-                  </div>
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">
+                  Output Settings
+                </h3>
+                <div className="mt-1 space-y-1">
+                  <p>Resolution: 1920x1080</p>
+                  <p>Aspect Ratio: 16:9</p>
+                  <p>Format: MP4</p>
                 </div>
-              )}
-
-              {project.status === "complete" && project.completedAt && (
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">
-                    Completed
-                  </h3>
-                  <p className="mt-1">
-                    {formatDistanceToNow(new Date(project.completedAt), {
-                      addSuffix: true,
-                    })}
-                  </p>
-                </div>
-              )}
+              </div>
             </CardContent>
           </Card>
 
@@ -407,95 +403,32 @@ const ProjectDetail = () => {
 
                 <div className="flex items-center">
                   <div
-                    className={`h-8 w-8 rounded-full ${project.presenterSettings ? "bg-green-500 text-white" : "bg-gray-200"} mr-3 flex items-center justify-center`}
+                    className={`h-8 w-8 rounded-full ${project.status === ProjectStatus.COMPLETED ? "bg-green-500 text-white" : "bg-gray-200"} mr-3 flex items-center justify-center`}
                   >
-                    {project.presenterSettings ? <Check size={16} /> : "3"}
+                    {project.status === ProjectStatus.COMPLETED ? (
+                      <Check size={16} />
+                    ) : (
+                      "5"
+                    )}
                   </div>
                   <div>
                     <p
-                      className={`font-medium ${!project.presenterSettings && "text-gray-500"}`}
-                    >
-                      Presenter Selection
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {project.presenterSettings
-                        ? "Presenter selected"
-                        : "Choose a presenter"}
-                    </p>
-                  </div>
-                  {project.transcription && !project.presenterSettings && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="ml-auto"
-                      onClick={() =>
-                        navigate(`/project/${projectId}/presenter-selection`)
-                      }
-                    >
-                      Select
-                    </Button>
-                  )}
-                </div>
-
-                <div className="flex items-center">
-                  <div
-                    className={`h-8 w-8 rounded-full ${project.outputSettings ? "bg-green-500 text-white" : "bg-gray-200"} mr-3 flex items-center justify-center`}
-                  >
-                    {project.outputSettings ? <Check size={16} /> : "4"}
-                  </div>
-                  <div>
-                    <p
-                      className={`font-medium ${!project.outputSettings && "text-gray-500"}`}
-                    >
-                      Output Settings
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {project.outputSettings
-                        ? "Output settings configured"
-                        : "Configure output settings"}
-                    </p>
-                  </div>
-                  {project.presenterSettings && !project.outputSettings && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="ml-auto"
-                      onClick={() =>
-                        navigate(`/project/${projectId}/output-settings`)
-                      }
-                    >
-                      Configure
-                    </Button>
-                  )}
-                </div>
-
-                <div className="flex items-center">
-                  <div
-                    className={`h-8 w-8 rounded-full ${project.status === "complete" ? "bg-green-500 text-white" : "bg-gray-200"} mr-3 flex items-center justify-center`}
-                  >
-                    {project.status === "complete" ? <Check size={16} /> : "5"}
-                  </div>
-                  <div>
-                    <p
-                      className={`font-medium ${project.status !== "complete" && "text-gray-500"}`}
+                      className={`font-medium ${project.status !== ProjectStatus.COMPLETED && "text-gray-500"}`}
                     >
                       Video Generation
                     </p>
                     <p className="text-sm text-gray-500">
                       {(() => {
-                        if (project.status === "complete") {
+                        if (project.status === ProjectStatus.COMPLETED) {
                           return "Video generated successfully";
                         }
-                        if (project.status === "processing") {
-                          return "Video generation in progress";
-                        }
+
                         return "Generate final video";
                       })()}
                     </p>
                   </div>
                   {project.outputSettings &&
-                    project.status !== "processing" &&
-                    project.status !== "complete" && (
+                    project.status !== ProjectStatus.COMPLETED && (
                       <Button
                         variant="ghost"
                         size="sm"

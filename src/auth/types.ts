@@ -8,7 +8,6 @@ export interface ISignUpWithEmail {
 
 export interface ISignInWithEmail {
   email: string;
-  password: string;
 }
 
 export interface ISendOtpCode {

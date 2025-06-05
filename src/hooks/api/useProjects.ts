@@ -1,76 +1,79 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   createProjectFromUrl,
   deleteProject,
-  duplicateProject,
-  generateVideo,
+  getProject,
   getProjects,
   updateProject,
-  uploadVideoFile,
 } from "@/api";
-import { mockProjects } from "@/api/mockData";
-import { Project } from "@/types";
+import { useAuthContext } from "@/auth/hooks/useAuthContext";
+import { Project, projectResponseToProject, ProjectType } from "@/types";
 
-// Hook to fetch all projects
 export const useProjects = () => {
-  return useQuery({
+  const { authenticated } = useAuthContext();
+
+  const res = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
+    enabled: authenticated,
+    select: (data) => data.map(projectResponseToProject),
   });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!authenticated) return;
+      res.refetch();
+    }, 700);
+
+    return () => clearInterval(interval);
+  }, [authenticated]);
+
+  return res;
 };
 
-// Hook to fetch a single project by ID
 export const useProject = (id: string) => {
-  const queryClient = useQueryClient();
+  const res = useQuery({
+    queryKey: ["projects", id],
+    queryFn: () => getProject(id),
+    select: (data) => projectResponseToProject(data),
+  });
 
-  return {
-    data:
-      queryClient
-        .getQueryData<Project[]>(["projects"])
-        ?.find((project) => project.id === id) || mockProjects[0],
-    isLoading: false,
-    error: null,
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      res.refetch();
+    }, 700);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return res;
 };
 
-// Hook to create a new project from URL
 export const useCreateProjectFromUrl = () => {
   const queryClient = useQueryClient();
+
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: ({
       name,
       url,
-      source,
+      type,
     }: {
       name: string;
       url: string;
-      source: string;
-    }) => createProjectFromUrl(name, url, source),
-    onSuccess: (response: Project) => {
-      queryClient.setQueryData(["projects"], (prev: Project[]) => [
-        ...prev,
-        response,
-      ]);
-    },
-  });
-};
-
-// Hook to upload a video file and create a project
-export const useUploadVideoFile = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ name, file }: { name: string; file: File }) =>
-      uploadVideoFile(name, file),
-    onSuccess: () => {
+      type: ProjectType;
+    }) => createProjectFromUrl(name, url, type),
+    onSuccess: (data) => {
+      navigate(`/project/${data._id}`);
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });
 };
 
-// Hook to update a project
 export const useUpdateProject = () => {
   const queryClient = useQueryClient();
 
@@ -86,21 +89,6 @@ export const useUpdateProject = () => {
   });
 };
 
-// Hook to generate a video from a project
-export const useGenerateVideo = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => generateVideo(id),
-    onSuccess: (updatedProject) => {
-      queryClient.invalidateQueries({
-        queryKey: ["project", updatedProject.id],
-      });
-    },
-  });
-};
-
-// Hook to delete a project
 export const useDeleteProject = () => {
   const queryClient = useQueryClient();
 
@@ -112,14 +100,16 @@ export const useDeleteProject = () => {
   });
 };
 
-// Hook to duplicate a project
 export const useDuplicateProject = () => {
   const queryClient = useQueryClient();
 
+  const navigate = useNavigate();
+
   return useMutation({
-    mutationFn: ({ id, newName }: { id: string; newName?: string }) =>
-      duplicateProject(id, newName),
-    onSuccess: () => {
+    mutationFn: (project: Project) =>
+      createProjectFromUrl(project.name, project.sourceUrl!, project.type),
+    onSuccess: (data) => {
+      navigate(`/project/${data._id}`);
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { useAuthGoogleCallback } from "@/auth/hooks/useAuthGoogleCallback";
+import { PageLoading } from "@/components/PageLoading";
 
 export const GoogleCallback = () => {
   const handleGoogleCallback = useAuthGoogleCallback();
@@ -18,5 +19,5 @@ export const GoogleCallback = () => {
     handleCallback();
   }, []);
 
-  return <div>Loading... Please wait.</div>;
+  return <PageLoading />;
 };

@@ -11,6 +11,7 @@ module.exports = {
     project: "./tsconfig.json",
   },
   rules: {
+    "no-underscore-dangle": "off",
     "prettier/prettier": "error",
     "arrow-body-style": "off",
     "prefer-arrow-callback": "off",

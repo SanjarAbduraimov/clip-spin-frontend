@@ -1,10 +1,15 @@
 import { Outlet } from "react-router-dom";
 
+import Header from "../components/Header";
+
 const ClipSpinLayout = () => {
   return (
-    <main className="min-h-screen w-full bg-bg-secondary-subtle">
-      <Outlet />
-    </main>
+    <div className="flex min-h-screen w-full flex-col bg-bg-secondary-subtle">
+      <Header />
+      <main className="flex-1">
+        <Outlet />
+      </main>
+    </div>
   );
 };
 

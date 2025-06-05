@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
+import { useVerifyEmail } from "@/auth/hooks/useVerifyEmail";
 import { Form } from "@/components/_form/Form";
 import { OTPField } from "@/components/_rhf/OTP";
 import { Button } from "@/components/Button";
@@ -18,18 +19,30 @@ const emailOTPSchema = z.object({
 
 type EmailOTPFormSchema = z.infer<typeof emailOTPSchema>;
 
-export const EmailOtp = () => {
+interface EmailOtpProps {
+  code: number;
+  codeHash: string;
+  email: string;
+}
+export const EmailOtp = ({ code, codeHash, email }: EmailOtpProps) => {
   const { t } = useTranslation("email-verification");
+
+  const { mutateAsync, isPending } = useVerifyEmail();
 
   const navigate = useNavigate();
   const form = useForm<EmailOTPFormSchema>({
     resolver: zodResolver(emailOTPSchema),
     defaultValues: {
-      code: "",
+      code: code.toString(),
     },
   });
   const handleSubmit = async (values: EmailOTPFormSchema) => {
-    navigate("/");
+    try {
+      await mutateAsync({ email, code, code_hash: codeHash });
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
 
     return values;
   };
@@ -65,19 +78,13 @@ export const EmailOtp = () => {
             </div>
             <LoadingButton
               type="submit"
-              isLoading={false}
+              isLoading={isPending}
               variant="primary"
               size="lg"
               className="w-full text-md"
             >
               {t("buttonTitle")}
             </LoadingButton>
-            <div className="flex flex-row items-center gap-1">
-              <p>{t("resendText")}</p>
-              <Button variant="primary-link" size="link">
-                {t("resendButton")}
-              </Button>
-            </div>
           </form>
         </Form>
         <Button
