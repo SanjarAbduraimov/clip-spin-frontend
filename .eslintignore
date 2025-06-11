@@ -2,6 +2,7 @@
 build/*
 dist/*
 public/*
+src/lib/*
 **/out/*
 **/.next/*
 **/node_modules/*
