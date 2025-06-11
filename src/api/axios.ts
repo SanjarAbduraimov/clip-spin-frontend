@@ -45,7 +45,7 @@ axiosInstance.interceptors.response.use(
 
     // Handle server errors
     if (response && response.status >= 500) {
-      console.error("Server error:", response.data);
+      // console.error("Server error:", response.data);
       // You could trigger a global error notification here
     }
 

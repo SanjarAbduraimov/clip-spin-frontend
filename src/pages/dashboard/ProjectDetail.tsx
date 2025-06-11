@@ -1,10 +1,12 @@
 import {
   ArrowLeft,
+  ArrowRight,
   Clock,
   Copy,
   Download,
   Edit,
   EyeIcon,
+  Loader2,
   Share2,
   Trash2,
 } from "lucide-react";
@@ -28,15 +30,24 @@ import {
 } from "@/components/DropdownMenu";
 import { PageLoading } from "@/components/PageLoading";
 import { Skeleton } from "@/components/Skeleton";
-import { useDeleteProject, useDuplicateProject, useProject } from "@/hooks/api";
+import {
+  useDeleteProject,
+  useDuplicateProject,
+  useGenerateVideo,
+  useProject,
+} from "@/hooks/api";
 import { useToast } from "@/hooks/useToast";
 import { formatDuration } from "@/lib/utils";
 import {
+  Project,
+  ProjectProgress,
   ProjectProgressLabels,
   ProjectStatus,
   ProjectStatusColors,
   ProjectStatusLabels,
 } from "@/types";
+
+import { EditIdeaDialog } from "./EditIdeaDialog";
 
 // Check component for showing completed steps
 const Check = ({ size }: { size: number }) => (
@@ -55,6 +66,17 @@ const Check = ({ size }: { size: number }) => (
   </svg>
 );
 
+const initialLoadingProjectProgressStatuses = [
+  ProjectProgress.FETCHING_INPUT,
+  ProjectProgress.ANALYZING_INPUT,
+  ProjectProgress.GENERATING_SCRIPT,
+];
+
+const generatingVideoProjectProgressStatuses = [
+  ProjectProgress.GENERATING_IMAGES,
+  ProjectProgress.GENERATING_VIDEO,
+];
+
 const ProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
@@ -63,6 +85,7 @@ const ProjectDetail = () => {
   const { data: project, isLoading } = useProject(projectId || "");
   const deleteProjectMutation = useDeleteProject();
   const duplicateProjectMutation = useDuplicateProject();
+  const generateVideoMutation = useGenerateVideo();
 
   const handleDeleteProject = () => {
     if (!projectId) return;
@@ -94,13 +117,21 @@ const ProjectDetail = () => {
     }
   };
 
+  const handleGenerateVideoClick = () => {
+    if (!projectId) return;
+    generateVideoMutation.mutate(projectId);
+  };
+
   const handleDuplicateProject = () => {
     if (!projectId || !project) return;
 
     duplicateProjectMutation.mutate(project);
   };
 
-  if (project?.status === "pending") {
+  if (
+    project?.status === ProjectStatus.PENDING &&
+    initialLoadingProjectProgressStatuses.includes(project.progress)
+  ) {
     return (
       <PageLoading
         text={
@@ -268,16 +299,33 @@ const ProjectDetail = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>Transcription</CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() =>
-                    navigate(`/project/${projectId}/transcription`)
-                  }
-                >
-                  <Edit size={16} className="mr-2" />
-                  Edit
-                </Button>
+                <div className="flex items-center gap-2">
+                  {checkEditTranscriptionButtonVisibility(project) && (
+                    <EditIdeaDialog
+                      project={project}
+                      button={
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          iconLeft={<Edit size={16} className="mr-2" />}
+                        >
+                          Edit
+                        </Button>
+                      }
+                    />
+                  )}
+                  {checkGenerateVideoButtonVisibility(project) && (
+                    <Button
+                      onClick={handleGenerateVideoClick}
+                      disabled={generateVideoMutation.isPending}
+                      iconRight={<ArrowRight />}
+                    >
+                      {generateVideoMutation.isPending
+                        ? "Generation started..."
+                        : "Generate Video"}
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="max-h-[300px] overflow-y-auto whitespace-pre-wrap rounded-lg bg-gray-50 p-4">
@@ -387,17 +435,15 @@ const ProjectDetail = () => {
                         : "Pending transcription"}
                     </p>
                   </div>
-                  {project.transcription && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="ml-auto"
-                      onClick={() =>
-                        navigate(`/project/${projectId}/transcription`)
+                  {checkEditTranscriptionButtonVisibility(project) && (
+                    <EditIdeaDialog
+                      project={project}
+                      button={
+                        <Button variant="ghost" size="sm" className="ml-auto">
+                          Edit
+                        </Button>
                       }
-                    >
-                      Edit
-                    </Button>
+                    />
                   )}
                 </div>
 
@@ -405,10 +451,18 @@ const ProjectDetail = () => {
                   <div
                     className={`h-8 w-8 rounded-full ${project.status === ProjectStatus.COMPLETED ? "bg-green-500 text-white" : "bg-gray-200"} mr-3 flex items-center justify-center`}
                   >
+                    {generatingVideoProjectProgressStatuses.includes(
+                      project.progress,
+                    ) &&
+                      project.status !== ProjectStatus.COMPLETED && (
+                        <Loader2 size={16} className="animate-spin" />
+                      )}
                     {project.status === ProjectStatus.COMPLETED ? (
                       <Check size={16} />
                     ) : (
-                      "5"
+                      !generatingVideoProjectProgressStatuses.includes(
+                        project.progress,
+                      ) && "3"
                     )}
                   </div>
                   <div>
@@ -427,19 +481,16 @@ const ProjectDetail = () => {
                       })()}
                     </p>
                   </div>
-                  {project.outputSettings &&
-                    project.status !== ProjectStatus.COMPLETED && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="ml-auto"
-                        onClick={() =>
-                          navigate(`/project/${projectId}/output-settings`)
-                        }
-                      >
-                        Generate
-                      </Button>
-                    )}
+                  {checkGenerateVideoButtonVisibility(project) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="ml-auto"
+                      onClick={handleGenerateVideoClick}
+                    >
+                      Generate Video
+                    </Button>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -449,6 +500,22 @@ const ProjectDetail = () => {
     </div>
   );
 };
+
+function checkEditTranscriptionButtonVisibility(project: Project): boolean {
+  if (project.progress === ProjectProgress.SUMMARY_GENERATED) {
+    return true;
+  }
+
+  return false;
+}
+
+function checkGenerateVideoButtonVisibility(project: Project): boolean {
+  if (project.progress === ProjectProgress.SUMMARY_GENERATED) {
+    return true;
+  }
+
+  return false;
+}
 
 // Check component moved to the top of the file
 

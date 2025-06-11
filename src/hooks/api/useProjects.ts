@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -8,9 +8,17 @@ import {
   getProject,
   getProjects,
   updateProject,
+  generateVideo,
 } from "@/api";
 import { useAuthContext } from "@/auth/hooks/useAuthContext";
-import { Project, projectResponseToProject, ProjectType } from "@/types";
+import {
+  Project,
+  ProjectProgress,
+  projectResponseToProject,
+  ProjectStatus,
+  ProjectType,
+  ProjectUpdateBody,
+} from "@/types";
 
 export const useProjects = () => {
   const { authenticated } = useAuthContext();
@@ -41,13 +49,35 @@ export const useProject = (id: string) => {
     select: (data) => projectResponseToProject(data),
   });
 
+  const intervalRef = useRef<NodeJS.Timeout>();
+
   useEffect(() => {
     const interval = setInterval(() => {
       res.refetch();
     }, 700);
 
+    intervalRef.current = interval;
+
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (!res.data) return;
+
+    const project = res.data;
+
+    if (
+      project.status === ProjectStatus.COMPLETED ||
+      project.status === ProjectStatus.FAILED ||
+      project.status === ProjectStatus.CANCELLED
+    ) {
+      clearInterval(intervalRef.current);
+    }
+
+    if (project.progress === ProjectProgress.SUMMARY_GENERATED) {
+      clearInterval(intervalRef.current);
+    }
+  }, [res.data]);
 
   return res;
 };
@@ -78,7 +108,7 @@ export const useUpdateProject = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Project> }) =>
+    mutationFn: ({ id, data }: { id: string; data: ProjectUpdateBody }) =>
       updateProject(id, data),
     onSuccess: (updatedProject) => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
@@ -110,6 +140,17 @@ export const useDuplicateProject = () => {
       createProjectFromUrl(project.name, project.sourceUrl!, project.type),
     onSuccess: (data) => {
       navigate(`/project/${data._id}`);
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+};
+
+export const useGenerateVideo = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (projectId: string) => generateVideo(projectId),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });

@@ -47,7 +47,7 @@ export const SignInWithEmail = () => {
         email: formData.email,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

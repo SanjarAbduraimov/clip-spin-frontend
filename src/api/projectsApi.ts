@@ -3,6 +3,7 @@ import {
   ProjectCreateResponse,
   ProjectResponse,
   ProjectType,
+  ProjectUpdateBody,
 } from "@/types";
 
 import axiosInstance from "./axios";
@@ -37,9 +38,15 @@ export const createProjectFromUrl = async (
 };
 
 // Update project settings
-export const updateProject = async (id: string, data: Partial<Project>) => {
+export const updateProject = async (id: string, data: ProjectUpdateBody) => {
   return axiosInstance
     .put<Project>(`/projects/${id}`, data)
+    .then((res) => res.data);
+};
+
+export const generateVideo = async (id: string) => {
+  return axiosInstance
+    .post<Project>(`/projects/${id}/generate`)
     .then((res) => res.data);
 };
 

@@ -56,7 +56,12 @@ const formSchema = z.object({
         message: "URL must be from YouTube Shorts, Instagram Reels, or TikTok",
       },
     ),
-  type: z.enum([ProjectType.slide_show, ProjectType.text_audiogram]),
+  type: z.enum([
+    ProjectType.slide_show,
+    ProjectType.text_audiogram,
+    ProjectType.talking_head,
+    ProjectType.professional,
+  ]),
 });
 
 const NewProject = () => {
@@ -214,10 +219,10 @@ const NewProject = () => {
                   <FormLabel>Project Type</FormLabel>
                   <FormControl>
                     <div
-                      className="flex flex-col gap-4 sm:flex-row"
+                      className="flex flex-col gap-4 overflow-auto sm:flex-row"
                       role="radiogroup"
                     >
-                      <div className="relative w-full max-w-[300px]">
+                      <div className="relative w-full min-w-[250px] max-w-[300px]">
                         <input
                           type="radio"
                           id="slide-show"
@@ -261,7 +266,7 @@ const NewProject = () => {
                         </label>
                       </div>
 
-                      <div className="relative w-full max-w-[300px]">
+                      <div className="relative w-full min-w-[250px] max-w-[300px]">
                         <input
                           type="radio"
                           id="text-audiogram"
@@ -306,6 +311,107 @@ const NewProject = () => {
                           </div>
                           <div
                             className={`absolute right-2 top-2 h-4 w-4 rounded-full ${field.value === ProjectType.text_audiogram ? "bg-primary" : "border-muted border"}`}
+                          />
+                        </label>
+                      </div>
+
+                      <div className="relative w-full min-w-[250px] max-w-[300px]">
+                        <input
+                          type="radio"
+                          id="talking-head"
+                          className="peer sr-only"
+                          checked={field.value === ProjectType.talking_head}
+                          onChange={() =>
+                            field.onChange(ProjectType.talking_head)
+                          }
+                          value={ProjectType.talking_head}
+                        />
+                        <label
+                          htmlFor="talking-head"
+                          className="flex cursor-pointer flex-col items-start rounded-lg border p-4 transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/5"
+                        >
+                          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="text-primary"
+                            >
+                              <circle cx="12" cy="8" r="5" />
+                              <path d="M20 21v-2a5 5 0 0 0-5-5H9a5 5 0 0 0-5 5v2" />
+                            </svg>
+                          </div>
+                          <div className="">
+                            <h3 className="text-lg font-medium">
+                              Talking Head
+                            </h3>
+                            <p className="text-muted-foreground text-sm">
+                              Create a video with a presenter speaking directly
+                              to camera
+                            </p>
+                          </div>
+                          <div
+                            className={`absolute right-2 top-2 h-4 w-4 rounded-full ${field.value === ProjectType.talking_head ? "bg-primary" : "border-muted border"}`}
+                          />
+                        </label>
+                      </div>
+
+                      <div className="relative w-full min-w-[250px] max-w-[300px]">
+                        <input
+                          type="radio"
+                          id="professional"
+                          className="peer sr-only"
+                          checked={field.value === ProjectType.professional}
+                          onChange={() =>
+                            field.onChange(ProjectType.professional)
+                          }
+                          value={ProjectType.professional}
+                        />
+                        <label
+                          htmlFor="professional"
+                          className="flex cursor-pointer flex-col items-start rounded-lg border p-4 transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/5"
+                        >
+                          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="text-primary"
+                            >
+                              <path d="m22 8-6 4 6 4V8Z" />
+                              <rect
+                                width="14"
+                                height="12"
+                                x="2"
+                                y="6"
+                                rx="2"
+                                ry="2"
+                              />
+                            </svg>
+                          </div>
+                          <div className="">
+                            <h3 className="text-lg font-medium">
+                              Professional
+                            </h3>
+                            <p className="text-muted-foreground text-sm">
+                              Create a high-quality professional video
+                              production
+                            </p>
+                          </div>
+                          <div
+                            className={`absolute right-2 top-2 h-4 w-4 rounded-full ${field.value === ProjectType.professional ? "bg-primary" : "border-muted border"}`}
                           />
                         </label>
                       </div>

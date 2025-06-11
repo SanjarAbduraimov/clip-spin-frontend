@@ -100,9 +100,14 @@ export const RecentProjects = () => {
                   All
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => setStatusFilter(ProjectStatus.PENDING)}
+                  onClick={() => setStatusFilter(ProjectStatus.QUEUED)}
                 >
-                  Pending
+                  Queued
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setStatusFilter(ProjectStatus.IN_PROGRESS)}
+                >
+                  In Progress
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setStatusFilter(ProjectStatus.CANCELLED)}

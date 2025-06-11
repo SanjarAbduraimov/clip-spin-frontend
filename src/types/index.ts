@@ -28,21 +28,46 @@ export interface Transcription {
 export enum ProjectType {
   slide_show = "slide_show",
   text_audiogram = "text_audiogram",
+  talking_head = "talking_head",
+  professional = "professional",
 }
 
 export enum ProjectStatus {
-  PENDING = "pending",
+  QUEUED = "queued",
+  IN_PROGRESS = "in_progress",
   CANCELLED = "cancelled",
   FAILED = "failed",
   COMPLETED = "completed",
+  // PENDING = "pending",
+  // CANCELLED = "cancelled",
+  // FAILED = "failed",
+  // COMPLETED = "completed",
 }
 
 export enum ProjectProgress {
   FETCHING_INPUT = "fetching_input",
+  INPUT_FETCHED = "input_fetched",
+
   ANALYZING_INPUT = "analyzing_input",
+  INPUT_ANALYZED = "input_analyzed",
+
   GENERATING_SCRIPT = "generating_script",
+  SCRIPT_GENERATED = "script_generated",
+
   GENERATING_IMAGES = "generating_images",
+  IMAGES_GENERATED = "images_generated",
+
   GENERATING_VIDEO = "generating_video",
+  VIDEO_GENERATED = "video_generated",
+
+  SAVING_RESULTS = "saving_results",
+  RESULTS_SAVED = "results_saved",
+  // FETCHING_INPUT = "fetching_input",
+  // ANALYZING_INPUT = "analyzing_input",
+  // GENERATING_SCRIPT = "generating_script",
+  // SUMMARY_GENERATED = "summary_generated",
+  // GENERATING_IMAGES = "generating_images",
+  // GENERATING_VIDEO = "generating_video",
 }
 
 export interface ProjectResponse {
@@ -86,6 +111,11 @@ export interface Project {
   outputUrl?: string;
 }
 
+export interface ProjectUpdateBody {
+  title: string;
+  input_summary: string;
+}
+
 export interface Presenter {
   id: string;
   name: string;
@@ -120,14 +150,16 @@ export const ProjectTypeLabels = {
 
 export const ProjectStatusColors: Record<ProjectStatus, BadgeProps["variant"]> =
   {
-    [ProjectStatus.PENDING]: "outline-warning",
+    [ProjectStatus.QUEUED]: "default",
+    [ProjectStatus.IN_PROGRESS]: "outline-warning",
     [ProjectStatus.CANCELLED]: "outline-error",
     [ProjectStatus.FAILED]: "outline-error",
     [ProjectStatus.COMPLETED]: "outline-success",
   };
 
 export const ProjectStatusLabels = {
-  [ProjectStatus.PENDING]: "Pending",
+  [ProjectStatus.QUEUED]: "Queued",
+  [ProjectStatus.IN_PROGRESS]: "In Progress",
   [ProjectStatus.CANCELLED]: "Cancelled",
   [ProjectStatus.FAILED]: "Failed",
   [ProjectStatus.COMPLETED]: "Completed",
@@ -135,10 +167,17 @@ export const ProjectStatusLabels = {
 
 export const ProjectProgressLabels = {
   [ProjectProgress.FETCHING_INPUT]: "Fetching input",
+  [ProjectProgress.INPUT_FETCHED]: "Input fetched",
   [ProjectProgress.ANALYZING_INPUT]: "Analyzing input",
+  [ProjectProgress.INPUT_ANALYZED]: "Input analyzed",
   [ProjectProgress.GENERATING_SCRIPT]: "Generating script",
+  [ProjectProgress.SCRIPT_GENERATED]: "Script generated",
   [ProjectProgress.GENERATING_IMAGES]: "Generating images",
+  [ProjectProgress.IMAGES_GENERATED]: "Images generated",
   [ProjectProgress.GENERATING_VIDEO]: "Generating video",
+  [ProjectProgress.VIDEO_GENERATED]: "Video generated",
+  [ProjectProgress.SAVING_RESULTS]: "Saving results",
+  [ProjectProgress.RESULTS_SAVED]: "Results saved",
 };
 
 export function projectResponseToProject(

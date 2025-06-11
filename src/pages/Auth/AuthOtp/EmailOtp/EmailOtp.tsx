@@ -41,7 +41,7 @@ export const EmailOtp = ({ code, codeHash, email }: EmailOtpProps) => {
       await mutateAsync({ email, code, code_hash: codeHash });
       navigate("/");
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
 
     return values;
