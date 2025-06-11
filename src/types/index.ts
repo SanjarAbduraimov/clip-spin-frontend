@@ -1,6 +1,7 @@
 // Project Types
 
 import { BadgeProps } from "@/components/Badge";
+import { config } from "@/constants/config";
 
 export type VideoSource = "YouTube" | "TikTok" | "Instagram";
 
@@ -65,7 +66,7 @@ export enum ProjectProgress {
   // FETCHING_INPUT = "fetching_input",
   // ANALYZING_INPUT = "analyzing_input",
   // GENERATING_SCRIPT = "generating_script",
-  // SUMMARY_GENERATED = "summary_generated",
+  // SCRIPT_GENERATED = "summary_generated",
   // GENERATING_IMAGES = "generating_images",
   // GENERATING_VIDEO = "generating_video",
 }
@@ -78,8 +79,10 @@ export interface ProjectResponse {
     input_summary: string;
     status: ProjectStatus;
     progress: ProjectProgress;
+    type: ProjectType;
+    file_key: string;
     result: {
-      video_url: string;
+      file_key: string;
     };
   };
 }
@@ -143,9 +146,11 @@ export interface ProjectCreateResponse {
   };
 }
 
-export const ProjectTypeLabels = {
+export const ProjectTypeLabels: Record<ProjectType, string> = {
   [ProjectType.slide_show]: "Slide Show",
   [ProjectType.text_audiogram]: "Text Audiogram",
+  [ProjectType.talking_head]: "Talking Head",
+  [ProjectType.professional]: "Professional",
 };
 
 export const ProjectStatusColors: Record<ProjectStatus, BadgeProps["variant"]> =
@@ -157,7 +162,7 @@ export const ProjectStatusColors: Record<ProjectStatus, BadgeProps["variant"]> =
     [ProjectStatus.COMPLETED]: "outline-success",
   };
 
-export const ProjectStatusLabels = {
+export const ProjectStatusLabels: Record<ProjectStatus, string> = {
   [ProjectStatus.QUEUED]: "Queued",
   [ProjectStatus.IN_PROGRESS]: "In Progress",
   [ProjectStatus.CANCELLED]: "Cancelled",
@@ -165,7 +170,7 @@ export const ProjectStatusLabels = {
   [ProjectStatus.COMPLETED]: "Completed",
 };
 
-export const ProjectProgressLabels = {
+export const ProjectProgressLabels: Record<ProjectProgress, string> = {
   [ProjectProgress.FETCHING_INPUT]: "Fetching input",
   [ProjectProgress.INPUT_FETCHED]: "Input fetched",
   [ProjectProgress.ANALYZING_INPUT]: "Analyzing input",
@@ -206,10 +211,10 @@ export function projectResponseToProject(
     createdAt: projectResponse._id,
     progress: projectResponse.progress,
     completedAt: new Date().toISOString(),
-    sourceUrl: projectResponse.input_video_url,
+    sourceUrl: `${config.apiBaseUrl}/files/${projectResponse.file_key}`,
     sourceFile: undefined,
     sourceType,
-    type: ProjectType.slide_show,
+    type: projectResponse.type,
     originalDuration: undefined,
     generatedDuration: undefined,
     transcription: {
@@ -220,6 +225,8 @@ export function projectResponseToProject(
     },
     outputSettings: undefined,
     presenterSettings: undefined,
-    outputUrl: projectResponse.result?.video_url,
+    outputUrl: projectResponse.result?.file_key
+      ? `${config.apiBaseUrl}/files/${projectResponse.result.file_key}`
+      : undefined,
   };
 }

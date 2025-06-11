@@ -15,6 +15,12 @@ export const getProjects = async () => {
     .then((res) => res.data.data);
 };
 
+export const getProjectsRequests = async () => {
+  return axiosInstance
+    .get<{ data: ProjectResponse["data"][] }>("/projects/professional")
+    .then((res) => res.data.data);
+};
+
 // Get a specific project by ID
 export const getProject = async (id: string) => {
   return axiosInstance
@@ -34,6 +40,18 @@ export const createProjectFromUrl = async (
       input_video_url: url,
       type,
     })
+    .then((res) => res.data.data);
+};
+
+export const uploadProjectResultVideo = async (
+  projectId: string,
+  video: File,
+): Promise<ProjectCreateResponse["data"]> => {
+  const formData = new FormData();
+  formData.append("video", video);
+
+  return axiosInstance
+    .post<ProjectCreateResponse>(`/projects/${projectId}/result`, formData)
     .then((res) => res.data.data);
 };
 

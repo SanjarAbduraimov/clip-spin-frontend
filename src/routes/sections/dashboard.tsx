@@ -6,7 +6,7 @@ const ClipSpinLayout = lazy(() => import("@/layout/ClipSpinLayout"));
 const ClipSpinDashboard = lazy(() => import("@/pages/dashboard/Dashboard"));
 const NewProject = lazy(() => import("@/pages/dashboard/NewProject"));
 const ProjectDetail = lazy(() => import("@/pages/dashboard/ProjectDetail"));
-const OutputSettings = lazy(() => import("@/pages/dashboard/OutputSettings"));
+const Requests = lazy(() => import("@/pages/dashboard/Requests"));
 
 export const dashboard: RouteObject[] = [
   {
@@ -26,8 +26,8 @@ export const dashboard: RouteObject[] = [
         element: <ProjectDetail />,
       },
       {
-        path: "project/:projectId/output-settings",
-        element: <OutputSettings />,
+        path: "requests",
+        element: <Requests />,
       },
     ],
   },

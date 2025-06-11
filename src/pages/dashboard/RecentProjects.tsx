@@ -27,7 +27,12 @@ import {
   useDuplicateProject,
   useProjects,
 } from "@/hooks/api";
-import { Project, ProjectStatus, ProjectStatusColors } from "@/types";
+import {
+  Project,
+  ProjectStatus,
+  ProjectStatusColors,
+  ProjectStatusLabels,
+} from "@/types";
 
 export const RecentProjects = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -182,8 +187,7 @@ export const RecentProjects = () => {
                     </TableCell>
                     <TableCell>
                       <Badge variant={ProjectStatusColors[project.status]}>
-                        {project.status.charAt(0).toUpperCase() +
-                          project.status.slice(1)}
+                        {ProjectStatusLabels[project.status]}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">

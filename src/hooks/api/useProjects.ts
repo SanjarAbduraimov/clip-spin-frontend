@@ -7,6 +7,7 @@ import {
   deleteProject,
   getProject,
   getProjects,
+  getProjectsRequests,
   updateProject,
   generateVideo,
 } from "@/api";
@@ -26,6 +27,28 @@ export const useProjects = () => {
   const res = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
+    enabled: authenticated,
+    select: (data) => data.map(projectResponseToProject),
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!authenticated) return;
+      res.refetch();
+    }, 700);
+
+    return () => clearInterval(interval);
+  }, [authenticated]);
+
+  return res;
+};
+
+export const useProjectsRequests = () => {
+  const { authenticated } = useAuthContext();
+
+  const res = useQuery({
+    queryKey: ["projects-requests"],
+    queryFn: getProjectsRequests,
     enabled: authenticated,
     select: (data) => data.map(projectResponseToProject),
   });
@@ -74,7 +97,7 @@ export const useProject = (id: string) => {
       clearInterval(intervalRef.current);
     }
 
-    if (project.progress === ProjectProgress.SUMMARY_GENERATED) {
+    if (project.progress === ProjectProgress.INPUT_ANALYZED) {
       clearInterval(intervalRef.current);
     }
   }, [res.data]);

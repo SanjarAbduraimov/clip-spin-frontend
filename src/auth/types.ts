@@ -42,12 +42,22 @@ export type ActionMapType<M extends { [index: string]: any }> = {
       };
 };
 
-export type AuthUserType = null | Record<string, any>;
+export enum Roles {
+  ADMIN = "admin",
+  USER = "user",
+}
+
+export type AuthUserType = {
+  email: string;
+  _id: string;
+  role: Roles;
+  accessToken: string;
+};
 
 export type AuthStateType = {
   status?: string;
   loading: boolean;
-  user: AuthUserType;
+  user: AuthUserType | null;
 };
 
 export interface JWTContextType {
@@ -76,22 +86,22 @@ export enum Types {
 
 export type Payload = {
   [Types.INITIAL]: {
-    user: AuthUserType;
+    user: AuthUserType | null;
   };
   [Types.SIGN_UP_WITH_EMAIL]: {
-    user: AuthUserType;
+    user: AuthUserType | null;
   };
   [Types.SIGN_IN_WITH_EMAIL]: {
-    user: AuthUserType;
+    user: AuthUserType | null;
   };
   [Types.SEND_OTP_CODE]: {
-    user: AuthUserType;
+    user: AuthUserType | null;
   };
   [Types.VERIFY_PHONE_OTP]: {
-    user: AuthUserType;
+    user: AuthUserType | null;
   };
   [Types.SIGN_UP_WITH_PHONE]: {
-    user: AuthUserType;
+    user: AuthUserType | null;
   };
   [Types.LOGOUT]: undefined;
 };

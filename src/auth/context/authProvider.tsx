@@ -1,6 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useReducer } from "react";
 
-import { ActionMapType, AuthStateType, Payload, Types } from "@/auth/types";
+import {
+  ActionMapType,
+  AuthStateType,
+  AuthUserType,
+  Payload,
+  Types,
+} from "@/auth/types";
 import { setSession } from "@/lib/utils";
 import http, { endpoints } from "@/services/api";
 
@@ -74,7 +80,7 @@ export function AuthProvider({ children }: Props) {
     if (accessToken) {
       try {
         const { data } = await http.get<{
-          data: { email: string; _id: string };
+          data: AuthUserType;
         }>(endpoints.auth.me);
         const { data: user } = data;
 

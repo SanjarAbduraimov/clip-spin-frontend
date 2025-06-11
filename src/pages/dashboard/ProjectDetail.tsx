@@ -9,10 +9,14 @@ import {
   Loader2,
   Share2,
   Trash2,
+  UploadIcon,
 } from "lucide-react";
+import { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { useAuthContext } from "@/auth/hooks/useAuthContext";
+import { AuthUserType, Roles } from "@/auth/types";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
 import {
@@ -45,9 +49,12 @@ import {
   ProjectStatus,
   ProjectStatusColors,
   ProjectStatusLabels,
+  ProjectType,
+  ProjectTypeLabels,
 } from "@/types";
 
 import { EditIdeaDialog } from "./EditIdeaDialog";
+import { UploadVideoDialog } from "./UploadVideoDialog";
 
 // Check component for showing completed steps
 const Check = ({ size }: { size: number }) => (
@@ -68,19 +75,28 @@ const Check = ({ size }: { size: number }) => (
 
 const initialLoadingProjectProgressStatuses = [
   ProjectProgress.FETCHING_INPUT,
+  ProjectProgress.INPUT_FETCHED,
   ProjectProgress.ANALYZING_INPUT,
-  ProjectProgress.GENERATING_SCRIPT,
 ];
 
 const generatingVideoProjectProgressStatuses = [
+  ProjectProgress.GENERATING_SCRIPT,
+  ProjectProgress.SCRIPT_GENERATED,
   ProjectProgress.GENERATING_IMAGES,
+  ProjectProgress.IMAGES_GENERATED,
   ProjectProgress.GENERATING_VIDEO,
+  ProjectProgress.VIDEO_GENERATED,
+  ProjectProgress.SAVING_RESULTS,
 ];
 
 const ProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const { user } = useAuthContext();
+
+  // Upload dialog state is now managed within the UploadVideoDialog component
 
   const { data: project, isLoading } = useProject(projectId || "");
   const deleteProjectMutation = useDeleteProject();
@@ -128,8 +144,11 @@ const ProjectDetail = () => {
     duplicateProjectMutation.mutate(project);
   };
 
+  // This function is no longer needed as the dialog handles its own state
+  // Kept as a placeholder for reference
+
   if (
-    project?.status === ProjectStatus.PENDING &&
+    project?.status === ProjectStatus.IN_PROGRESS &&
     initialLoadingProjectProgressStatuses.includes(project.progress)
   ) {
     return (
@@ -141,6 +160,11 @@ const ProjectDetail = () => {
         }
       />
     );
+  }
+
+  if (!user) {
+    navigate("/auth/sign-in");
+    return null;
   }
 
   if (isLoading) {
@@ -223,36 +247,16 @@ const ProjectDetail = () => {
               <CardTitle>Video Preview</CardTitle>
             </CardHeader>
             <CardContent>
-              {/* Render video preview based on project state */}
-              {project.status === ProjectStatus.COMPLETED &&
-                project.outputUrl && (
-                  <div className="aspect-video overflow-hidden rounded-lg bg-black">
-                    <video
-                      src={project.outputUrl}
-                      controls
-                      autoPlay
-                      className="h-full w-full"
-                    >
-                      <track kind="captions" src="" label="English" />
-                    </video>
-                  </div>
-                )}
-
-              {/* Show source video if available and project is not complete or has no output URL */}
-              {(project.status !== ProjectStatus.COMPLETED ||
-                !project.outputUrl) &&
-                (project.sourceUrl || project.sourceFile) && (
-                  <div className="aspect-video overflow-hidden rounded-lg bg-black">
-                    <video
-                      src={project.sourceUrl || project.sourceFile}
-                      controls
-                      autoPlay
-                      className="h-full w-full"
-                    >
-                      <track kind="captions" src="" label="English" />
-                    </video>
-                  </div>
-                )}
+              <div className="aspect-video overflow-hidden rounded-lg bg-black">
+                <video
+                  src={getVideoUrl(project)}
+                  controls
+                  autoPlay
+                  className="h-full w-full"
+                >
+                  <track kind="captions" src="" label="English" />
+                </video>
+              </div>
 
               {/* Show placeholder when no video is available */}
               {!project.outputUrl &&
@@ -298,7 +302,7 @@ const ProjectDetail = () => {
           {project.transcription && (
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle>Transcription</CardTitle>
+                <CardTitle>Content Summary</CardTitle>
                 <div className="flex items-center gap-2">
                   {checkEditTranscriptionButtonVisibility(project) && (
                     <EditIdeaDialog
@@ -324,6 +328,20 @@ const ProjectDetail = () => {
                         ? "Generation started..."
                         : "Generate Video"}
                     </Button>
+                  )}
+                  {checkUploadButtonVisibility(project, user) && (
+                    <UploadVideoDialog
+                      project={project}
+                      button={
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          iconRight={<UploadIcon size={16} />}
+                        >
+                          Upload Video
+                        </Button>
+                      }
+                    />
                   )}
                 </div>
               </CardHeader>
@@ -385,6 +403,15 @@ const ProjectDetail = () => {
                   </p>
                 </div>
               )}
+
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">
+                  Project Type
+                </h3>
+                <div className="mt-1 space-y-1">
+                  <p>{ProjectTypeLabels[project.type]}</p>
+                </div>
+              </div>
 
               <div>
                 <h3 className="text-sm font-medium text-gray-500">
@@ -451,18 +478,13 @@ const ProjectDetail = () => {
                   <div
                     className={`h-8 w-8 rounded-full ${project.status === ProjectStatus.COMPLETED ? "bg-green-500 text-white" : "bg-gray-200"} mr-3 flex items-center justify-center`}
                   >
-                    {generatingVideoProjectProgressStatuses.includes(
-                      project.progress,
-                    ) &&
-                      project.status !== ProjectStatus.COMPLETED && (
-                        <Loader2 size={16} className="animate-spin" />
-                      )}
+                    {checkIsVideoGenerating(project) && (
+                      <Loader2 size={16} className="animate-spin" />
+                    )}
                     {project.status === ProjectStatus.COMPLETED ? (
                       <Check size={16} />
                     ) : (
-                      !generatingVideoProjectProgressStatuses.includes(
-                        project.progress,
-                      ) && "3"
+                      !checkIsVideoGenerating(project) && "3"
                     )}
                   </div>
                   <div>
@@ -472,25 +494,9 @@ const ProjectDetail = () => {
                       Video Generation
                     </p>
                     <p className="text-sm text-gray-500">
-                      {(() => {
-                        if (project.status === ProjectStatus.COMPLETED) {
-                          return "Video generated successfully";
-                        }
-
-                        return "Generate final video";
-                      })()}
+                      {getVideoGenerationStepTexts(project)}
                     </p>
                   </div>
-                  {checkGenerateVideoButtonVisibility(project) && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="ml-auto"
-                      onClick={handleGenerateVideoClick}
-                    >
-                      Generate Video
-                    </Button>
-                  )}
                 </div>
               </div>
             </CardContent>
@@ -502,7 +508,7 @@ const ProjectDetail = () => {
 };
 
 function checkEditTranscriptionButtonVisibility(project: Project): boolean {
-  if (project.progress === ProjectProgress.SUMMARY_GENERATED) {
+  if (project.progress === ProjectProgress.INPUT_ANALYZED) {
     return true;
   }
 
@@ -510,7 +516,65 @@ function checkEditTranscriptionButtonVisibility(project: Project): boolean {
 }
 
 function checkGenerateVideoButtonVisibility(project: Project): boolean {
-  if (project.progress === ProjectProgress.SUMMARY_GENERATED) {
+  if (
+    project.progress === ProjectProgress.INPUT_ANALYZED &&
+    project.type !== ProjectType.professional
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+function checkIsVideoGenerating(project: Project) {
+  if (
+    project.status === ProjectStatus.FAILED ||
+    project.status === ProjectStatus.CANCELLED ||
+    project.status === ProjectStatus.COMPLETED
+  ) {
+    return false;
+  }
+
+  if (generatingVideoProjectProgressStatuses.includes(project.progress)) {
+    return true;
+  }
+
+  return false;
+}
+
+function getVideoGenerationStepTexts(project: Project): ReactNode {
+  if (project.status === ProjectStatus.COMPLETED) {
+    return "Video generated successfully";
+  }
+
+  if (checkIsVideoGenerating(project)) {
+    return "Generating final video...";
+  }
+
+  if (project.status === ProjectStatus.FAILED) {
+    return <Badge variant="outline-error">Failed</Badge>;
+  }
+
+  return "Generate final video";
+}
+
+function getVideoUrl(project: Project) {
+  if (project.progress === ProjectProgress.RESULTS_SAVED) {
+    return project.outputUrl;
+  }
+
+  return project.sourceUrl;
+}
+
+function checkUploadButtonVisibility(
+  project: Project,
+  user: AuthUserType,
+): boolean {
+  if (
+    project.progress === ProjectProgress.INPUT_ANALYZED &&
+    project.type === ProjectType.professional &&
+    user.role === Roles.ADMIN
+  ) {
     return true;
   }
 

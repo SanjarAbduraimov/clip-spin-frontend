@@ -10,7 +10,7 @@ export const Statistics = () => {
   const completedProjects =
     projects?.filter((p) => p.status === "completed").length || 0;
   const processingProjects =
-    projects?.filter((p) => p.status === "pending").length || 0;
+    projects?.filter((p) => p.status === "in_progress").length || 0;
 
   return (
     <div className="mb-8 grid gap-4 md:grid-cols-3">
