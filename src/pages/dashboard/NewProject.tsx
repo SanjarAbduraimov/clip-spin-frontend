@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -23,6 +24,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/Card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/Tooltip";
 import { useCreateProjectFromUrl } from "@/hooks/api";
 import { useToast } from "@/hooks/useToast";
 import { ProjectType } from "@/types";
@@ -36,15 +38,15 @@ const formSchema = z.object({
       (url) => {
         // Check for YouTube Shorts URLs
         const youtubeShortRegex =
-          /^(https?:\/\/)?(www\.)?(youtube\.com\/shorts\/|youtu\.be\/shorts\/)([a-zA-Z0-9_-]{11})(\?.*)?$/;
+          /^(https?:\/\/)?(www\.)?(youtube\.com\/shorts\/|youtu\.be\/shorts\/)([a-zA-Z0-9_-]{11})(\/?)([?#].*)?$/;
 
         // Check for Instagram Reels URLs
         const instagramReelRegex =
-          /^(https?:\/\/)?(www\.)?(instagram\.com\/reels?\/|instagram\.com\/reel\/)([a-zA-Z0-9_-]+)(\?.*)?$/;
+          /^(https?:\/\/)?(www\.)?(instagram\.com\/reels?\/|instagram\.com\/reel\/)([a-zA-Z0-9_-]+)(\/?)([?#].*)?$/;
 
         // Check for TikTok URLs
         const tiktokRegex =
-          /^(https?:\/\/)?(www\.)?(tiktok\.com\/@[\w.-]+\/video\/|vm\.tiktok\.com\/)([0-9]+)(\?.*)?$/;
+          /^(https?:\/\/)?(www\.)?(tiktok\.com\/@[\w.-]+\/video\/|vm\.tiktok\.com\/)([0-9]+)(\/?)([?#].*)?$/;
 
         return (
           youtubeShortRegex.test(url) ||
@@ -199,10 +201,21 @@ const NewProject = () => {
               name="url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Video URL</FormLabel>
+                  <FormLabel className="flex items-center gap-1">
+                    Video URL{" "}
+                    <Tooltip>
+                      <TooltipTrigger type="button">
+                        <QuestionMarkCircledIcon />
+                      </TooltipTrigger>
+                      <TooltipContent className="w-[200px]">
+                        Paste a video URL from YouTube Shorts, Instagram Reels,
+                        or TikTok to get a video idea.
+                      </TooltipContent>
+                    </Tooltip>
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="https://www.youtube.com/watch?v=..."
+                      placeholder="Youtube Shorts, Instagram Reels, TikTok"
                       {...field}
                     />
                   </FormControl>
@@ -255,7 +268,20 @@ const NewProject = () => {
                             </svg>
                           </div>
                           <div className="">
-                            <h3 className="text-lg font-medium">Slide Show</h3>
+                            <h3 className="flex items-center gap-1 text-lg font-medium">
+                              Slide Show{" "}
+                              <Tooltip>
+                                <TooltipTrigger type="button">
+                                  <QuestionMarkCircledIcon
+                                    width={16}
+                                    height={16}
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent className="w-[200px]">
+                                  Create a video with animated slides
+                                </TooltipContent>
+                              </Tooltip>
+                            </h3>
                             <p className="text-muted-foreground text-sm">
                               Create a video with animated slides
                             </p>

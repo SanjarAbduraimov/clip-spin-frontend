@@ -72,3 +72,21 @@ export const generateVideo = async (id: string) => {
 export const deleteProject = async (id: string) => {
   return axiosInstance.delete<void>(`/projects/${id}`).then(() => {});
 };
+
+export const uploadFile = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return axiosInstance
+    .post<{ file_key: string }>(`/files`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => res.data);
+};
+
+export const uploadProjectVideo = async (projectId: string, video: string) => {
+  return axiosInstance
+    .post<Project>(`/projects/${projectId}/result`, { file_key: video })
+    .then((res) => res.data);
+};

@@ -5,6 +5,7 @@ import {
   Copy,
   Download,
   Edit,
+  ExternalLink,
   EyeIcon,
   Loader2,
   Share2,
@@ -14,6 +15,8 @@ import {
 import { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
+
+import { getProjectStatusLabel } from "@/modules/project/libs/getProjectStatusLabel";
 
 import { useAuthContext } from "@/auth/hooks/useAuthContext";
 import { AuthUserType, Roles } from "@/auth/types";
@@ -32,6 +35,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/DropdownMenu";
+import { Link } from "@/components/Link";
 import { PageLoading } from "@/components/PageLoading";
 import { Skeleton } from "@/components/Skeleton";
 import {
@@ -48,7 +52,6 @@ import {
   ProjectProgressLabels,
   ProjectStatus,
   ProjectStatusColors,
-  ProjectStatusLabels,
   ProjectType,
   ProjectTypeLabels,
 } from "@/types";
@@ -214,7 +217,7 @@ const ProjectDetail = () => {
           <h1 className="text-3xl font-bold">{project.name}</h1>
           <div className="mt-2 flex items-center gap-3">
             <Badge size="sm" variant={ProjectStatusColors[project.status]}>
-              {ProjectStatusLabels[project.status]}
+              {getProjectStatusLabel(project)}
             </Badge>
           </div>
         </div>
@@ -363,8 +366,15 @@ const ProjectDetail = () => {
               <div>
                 <h3 className="text-sm font-medium text-gray-500">Source</h3>
                 <p className="mt-1">
-                  {project.sourceType.charAt(0).toUpperCase() +
-                    project.sourceType.slice(1)}
+                  <Link
+                    to={project.sourceUrl || ""}
+                    target="_blank"
+                    className="flex gap-1 text-inherit"
+                  >
+                    {project.sourceType.charAt(0).toUpperCase() +
+                      project.sourceType.slice(1)}
+                    <ExternalLink size={16} />
+                  </Link>
                 </p>
               </div>
 
@@ -508,6 +518,10 @@ const ProjectDetail = () => {
 };
 
 function checkEditTranscriptionButtonVisibility(project: Project): boolean {
+  if (project.status === ProjectStatus.COMPLETED) {
+    return false;
+  }
+
   if (project.progress === ProjectProgress.INPUT_ANALYZED) {
     return true;
   }
@@ -559,7 +573,7 @@ function getVideoGenerationStepTexts(project: Project): ReactNode {
 }
 
 function getVideoUrl(project: Project) {
-  if (project.progress === ProjectProgress.RESULTS_SAVED) {
+  if (project.status === ProjectStatus.COMPLETED) {
     return project.outputUrl;
   }
 
@@ -570,6 +584,10 @@ function checkUploadButtonVisibility(
   project: Project,
   user: AuthUserType,
 ): boolean {
+  if (project.status === ProjectStatus.COMPLETED) {
+    return false;
+  }
+
   if (
     project.progress === ProjectProgress.INPUT_ANALYZED &&
     project.type === ProjectType.professional &&

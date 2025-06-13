@@ -2,6 +2,8 @@ import { Copy, Download, Filter, Search, Share2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+import { getProjectStatusLabel } from "@/modules/project/libs/getProjectStatusLabel";
+
 import { useAuthContext } from "@/auth/hooks/useAuthContext";
 import { Input } from "@/components/_form/Input";
 import { Badge } from "@/components/Badge";
@@ -31,7 +33,7 @@ import {
   Project,
   ProjectStatus,
   ProjectStatusColors,
-  ProjectStatusLabels,
+  ProjectTypeLabels,
 } from "@/types";
 
 export const RecentProjects = () => {
@@ -171,6 +173,7 @@ export const RecentProjects = () => {
                 <TableRow>
                   <TableHead>Project Name</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Project Type</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -187,8 +190,11 @@ export const RecentProjects = () => {
                     </TableCell>
                     <TableCell>
                       <Badge variant={ProjectStatusColors[project.status]}>
-                        {ProjectStatusLabels[project.status]}
+                        {getProjectStatusLabel(project)}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge>{ProjectTypeLabels[project.type]}</Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

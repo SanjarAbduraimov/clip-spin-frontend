@@ -42,7 +42,7 @@ export const Statistics = () => {
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium">Processing</CardTitle>
+          <CardTitle className="text-sm font-medium">In Progress</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">

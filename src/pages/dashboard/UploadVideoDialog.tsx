@@ -11,27 +11,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/Dialog";
+import { useUploadProjectFile } from "@/hooks/api";
 import { useToast } from "@/hooks/useToast";
 import { Project } from "@/types";
-
-// This would be implemented in the API layer
-const uploadVideo = async (projectId: string, file: File): Promise<void> => {
-  // Create a FormData object to send the file
-  const formData = new FormData();
-  formData.append("video", file);
-
-  // This would be replaced with an actual API call
-  // Example: return axiosInstance.post(`/projects/${projectId}/upload-video`, formData);
-
-  // For now, just simulate a delay
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // eslint-disable-next-line no-console
-      console.log(`Uploaded video for project ${projectId}:`, file.name);
-      resolve();
-    }, 1500);
-  });
-};
 
 export const UploadVideoDialog = ({
   project,
@@ -44,7 +26,10 @@ export const UploadVideoDialog = ({
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const { toast } = useToast();
+
+  const uploadFileMutation = useUploadProjectFile(project.id);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -58,7 +43,7 @@ export const UploadVideoDialog = ({
     setUploading(true);
 
     try {
-      await uploadVideo(project.id, selectedFile);
+      await uploadFileMutation.mutateAsync(selectedFile);
 
       toast({
         title: "Video uploaded",

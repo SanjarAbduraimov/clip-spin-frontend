@@ -77,7 +77,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             disabled={disabled ?? undefined}
             className={cn(
-              "flex-1 bg-transparent outline-none placeholder:text-text-placeholder focus:placeholder:text-text-primary",
+              "flex-1 bg-transparent outline-none placeholder:text-text-placeholder",
               inputClassName,
             )}
             {...props}

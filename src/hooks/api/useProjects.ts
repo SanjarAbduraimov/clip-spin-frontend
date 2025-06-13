@@ -10,6 +10,8 @@ import {
   getProjectsRequests,
   updateProject,
   generateVideo,
+  uploadFile,
+  uploadProjectVideo,
 } from "@/api";
 import { useAuthContext } from "@/auth/hooks/useAuthContext";
 import {
@@ -173,6 +175,24 @@ export const useGenerateVideo = () => {
 
   return useMutation({
     mutationFn: (projectId: string) => generateVideo(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+};
+
+export const useUploadProjectFile = (projectId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const { file_key: fileKey } = await uploadFile(file);
+      const uploadProjectVideoResponse = await uploadProjectVideo(
+        projectId,
+        fileKey,
+      );
+      return uploadProjectVideoResponse;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
