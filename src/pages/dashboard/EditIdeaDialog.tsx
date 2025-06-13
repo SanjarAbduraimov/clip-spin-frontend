@@ -1,18 +1,6 @@
-import {
-  headingsPlugin,
-  listsPlugin,
-  quotePlugin,
-  thematicBreakPlugin,
-  markdownShortcutPlugin,
-  MDXEditor,
-  toolbarPlugin,
-  UndoRedo,
-  BoldItalicUnderlineToggles,
-  ListsToggle,
-} from "@mdxeditor/editor";
-import "@mdxeditor/editor/style.css";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
+import { Textarea } from "@/components/_form/Textarea";
 import { Button } from "@/components/Button";
 import {
   Dialog,
@@ -23,38 +11,36 @@ import {
   DialogTrigger,
 } from "@/components/Dialog";
 import { useUpdateProject } from "@/hooks/api";
-import { Project } from "@/types";
 
 export const EditIdeaDialog = ({
-  project,
+  initialScript,
+  projectId,
   button,
 }: {
-  project: Project;
+  initialScript: string;
+  projectId: string;
   button: React.ReactNode;
 }) => {
   const [open, setOpen] = useState(false);
 
   const updateProjectMutation = useUpdateProject();
 
-  const [markdown, setMarkdown] = useState(project.transcription?.text || "");
+  const [script, setScript] = useState(initialScript);
 
   const handleSave = () => {
     updateProjectMutation
       .mutateAsync({
-        id: project.id,
+        id: projectId,
         data: {
-          input_summary: markdown,
-          title: project.name,
+          input_summary: script,
         },
       })
       .then(() => setOpen(false));
   };
 
   useEffect(() => {
-    if (project.transcription) {
-      setMarkdown(project.transcription.text);
-    }
-  }, [project]);
+    setScript(initialScript);
+  }, [initialScript]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -63,30 +49,7 @@ export const EditIdeaDialog = ({
         <DialogHeader>
           <DialogTitle>Edit Idea</DialogTitle>
         </DialogHeader>
-        {project.transcription?.text && (
-          <MDXEditor
-            markdown={markdown}
-            onChange={(md) => setMarkdown(md)}
-            className="max-h-[400px] overflow-auto"
-            plugins={[
-              toolbarPlugin({
-                toolbarClassName: "my-classname",
-                toolbarContents: () => (
-                  <>
-                    <UndoRedo />
-                    <BoldItalicUnderlineToggles />
-                    <ListsToggle />
-                  </>
-                ),
-              }),
-              headingsPlugin(),
-              listsPlugin(),
-              quotePlugin(),
-              thematicBreakPlugin(),
-              markdownShortcutPlugin(),
-            ]}
-          />
-        )}
+        <Textarea value={script} onChange={(e) => setScript(e.target.value)} />
         <DialogFooter>
           <Button
             onClick={handleSave}

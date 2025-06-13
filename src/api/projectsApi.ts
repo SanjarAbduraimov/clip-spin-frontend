@@ -4,6 +4,7 @@ import {
   ProjectResponse,
   ProjectType,
   ProjectUpdateBody,
+  createProjectReqMapper,
 } from "@/types";
 
 import axiosInstance from "./axios";
@@ -35,11 +36,14 @@ export const createProjectFromUrl = async (
   type: ProjectType,
 ): Promise<ProjectCreateResponse["data"]> => {
   return axiosInstance
-    .post<ProjectCreateResponse>("/projects", {
-      title: name,
-      input_video_url: url,
-      type,
-    })
+    .post<ProjectCreateResponse>(
+      "/projects",
+      createProjectReqMapper({
+        name,
+        url,
+        type,
+      }),
+    )
     .then((res) => res.data.data);
 };
 

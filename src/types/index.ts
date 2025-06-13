@@ -71,12 +71,27 @@ export enum ProjectProgress {
   // GENERATING_VIDEO = "generating_video",
 }
 
+// {
+//   "_id": "684bfe20886012479d1e558c",
+//   "title": "Ibrohim",
+//   "type": "slide_show",
+//   "input": {
+//       "url": "https://www.instagram.com/reel/DFK_lARJBVC"
+//   },
+//   "suggested_ideas": [],
+//   "status": "queued"
+// }
+
 export interface ProjectResponse {
   data: {
     _id: string;
     title: string;
-    input_video_url: string;
-    input_summary: string;
+    input: {
+      url: string;
+      source?: string;
+      file_key?: string;
+    };
+    suggested_ideas: { script: string }[];
     status: ProjectStatus;
     progress: ProjectProgress;
     type: ProjectType;
@@ -85,6 +100,20 @@ export interface ProjectResponse {
       file_key: string;
     };
   };
+}
+
+export interface CreateProjectReq {
+  title: string;
+  input: {
+    url: string;
+  };
+  type: ProjectType;
+}
+
+export interface CreateProject {
+  name: string;
+  url: string;
+  type: ProjectType;
 }
 
 export interface Project {
@@ -100,7 +129,7 @@ export interface Project {
   type: ProjectType;
   originalDuration?: number;
   generatedDuration?: number;
-  transcription?: Transcription;
+  suggestedIdeas: string[];
   outputSettings?: {
     resolution: Resolution;
     aspectRatio: AspectRatio;
@@ -115,8 +144,8 @@ export interface Project {
 }
 
 export interface ProjectUpdateBody {
-  title: string;
-  input_summary: string;
+  title?: string;
+  input_summary?: string;
 }
 
 export interface Presenter {
@@ -191,15 +220,15 @@ export function projectResponseToProject(
   let sourceType: VideoSource = "YouTube";
 
   if (
-    projectResponse.input_video_url.includes("youtube.com") ||
-    projectResponse.input_video_url.includes("youtu.be")
+    projectResponse.input.url.includes("youtube.com") ||
+    projectResponse.input.url.includes("youtu.be")
   ) {
     sourceType = "YouTube";
-  } else if (projectResponse.input_video_url.includes("instagram.com")) {
+  } else if (projectResponse.input.url.includes("instagram.com")) {
     sourceType = "Instagram";
   } else if (
-    projectResponse.input_video_url.includes("tiktok.com") ||
-    projectResponse.input_video_url.includes("vm.tiktok.com")
+    projectResponse.input.url.includes("tiktok.com") ||
+    projectResponse.input.url.includes("vm.tiktok.com")
   ) {
     sourceType = "TikTok";
   }
@@ -208,21 +237,16 @@ export function projectResponseToProject(
     id: projectResponse._id,
     name: projectResponse.title,
     status: projectResponse.status,
-    createdAt: projectResponse._id,
+    createdAt: new Date().toISOString(),
+    suggestedIdeas: projectResponse.suggested_ideas.map((idea) => idea.script),
     progress: projectResponse.progress,
     completedAt: new Date().toISOString(),
-    sourceUrl: `${config.apiBaseUrl}/files/${projectResponse.file_key}`,
+    sourceUrl: `${config.apiBaseUrl}/files/${projectResponse.input.file_key}`,
     sourceFile: undefined,
     sourceType,
     type: projectResponse.type,
     originalDuration: undefined,
     generatedDuration: undefined,
-    transcription: {
-      id: "",
-      text: projectResponse.input_summary,
-      timestamps: [],
-      language: "en",
-    },
     outputSettings: undefined,
     presenterSettings: undefined,
     outputUrl: projectResponse.result?.file_key
@@ -230,3 +254,15 @@ export function projectResponseToProject(
       : undefined,
   };
 }
+
+export const createProjectReqMapper = (
+  body: CreateProject,
+): CreateProjectReq => {
+  return {
+    title: body.name,
+    input: {
+      url: body.url,
+    },
+    type: body.type,
+  };
+};
