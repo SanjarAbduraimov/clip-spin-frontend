@@ -19,7 +19,7 @@ export const services: Service[] = [
     name: "Professional Editor",
     description: "Video editing made by professionals",
     icon: <UsersRound />,
-    isInBeta: true,
+    isInBeta: false,
     type: ServiceType.PROFESSIONAL_EDITOR,
   },
   {

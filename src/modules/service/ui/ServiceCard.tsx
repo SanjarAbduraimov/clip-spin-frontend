@@ -12,13 +12,19 @@ import { Service } from "../types/Service";
 
 interface ServiceCardProps {
   service: Service;
+  onClick: () => void;
 }
 
 export const ServiceCard: FC<ServiceCardProps> = ({
   service: { name, description, icon, isInBeta },
+  onClick,
 }) => {
   return (
-    <Card className="relative">
+    <Card
+      className="relative cursor-pointer transition-shadow hover:shadow-lg active:shadow-sm"
+      tabIndex={isInBeta ? undefined : 0}
+      onClick={onClick}
+    >
       <CardHeader>
         <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-lg bg-bg-brand-primary text-text-brand-tertiary shadow-sm [&>svg]:h-8 [&>svg]:w-8">
           {icon}

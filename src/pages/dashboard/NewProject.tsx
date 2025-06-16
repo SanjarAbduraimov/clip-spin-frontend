@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -66,7 +67,11 @@ const formSchema = z.object({
   ]),
 });
 
-const NewProject = () => {
+interface NewProjectProps {
+  projectType: ProjectType;
+}
+
+const NewProject = ({ projectType }: NewProjectProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -87,6 +92,10 @@ const NewProject = () => {
     },
   });
 
+  useEffect(() => {
+    form.setValue("type", projectType);
+  }, [projectType]);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const { url, name } = values;
@@ -103,7 +112,7 @@ const NewProject = () => {
       await createProjectMutation.mutateAsync({
         name,
         url,
-        type: values.type,
+        type: projectType,
       });
 
       form.reset();
@@ -123,7 +132,7 @@ const NewProject = () => {
   };
 
   return (
-    <Card>
+    <Card id="new-project">
       <CardHeader>
         <CardTitle asChild>
           <h1 className="flex items-center gap-2">
@@ -208,8 +217,18 @@ const NewProject = () => {
                         <QuestionMarkCircledIcon />
                       </TooltipTrigger>
                       <TooltipContent className="w-[200px]">
-                        Paste a video URL from YouTube Shorts, Instagram Reels,
-                        or TikTok to get a video idea.
+                        <div className="flex flex-col gap-2">
+                          <p>What video URLs work?</p>
+                          <p>
+                            TikTok, YouTube Shorts, Instagram Reels (must be
+                            public) Max input video length: 1 minutes
+                          </p>
+                          <p>
+                            Why might it fail? Private videos, expired links, or
+                            unsupported platforms Format tips: Paste full
+                            shareable URL, not embed or shortened links
+                          </p>
+                        </div>
                       </TooltipContent>
                     </Tooltip>
                   </FormLabel>
@@ -278,7 +297,17 @@ const NewProject = () => {
                                   />
                                 </TooltipTrigger>
                                 <TooltipContent className="w-[200px]">
-                                  Create a video with animated slides
+                                  An AI avatar delivers your script
+                                  face-to-camera with clean visuals. Great for
+                                  explainers, pitches, and intros.{" "}
+                                  <a
+                                    href="https://clipspin-api.qisqa.link/api/files/839ecd1a-ba37-480f-88be-cd7049b91978.mp4"
+                                    target="_blank"
+                                    className="text-primary"
+                                    rel="noreferrer"
+                                  >
+                                    Example
+                                  </a>
                                 </TooltipContent>
                               </Tooltip>
                             </h3>
@@ -328,8 +357,29 @@ const NewProject = () => {
                             </svg>
                           </div>
                           <div className="">
-                            <h3 className="text-lg font-medium">
-                              Text Audiogram
+                            <h3 className="flex items-center gap-1 text-lg font-medium">
+                              Text Audiogram{" "}
+                              <Tooltip>
+                                <TooltipTrigger type="button">
+                                  <QuestionMarkCircledIcon
+                                    width={16}
+                                    height={16}
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent className="w-[200px]">
+                                  Fast-paced vertical videos with bold captions,
+                                  emojis, and B-roll—perfect for Reels, Shorts,
+                                  and TikToks.{" "}
+                                  <a
+                                    href="https://clipspin-api.qisqa.link/api/files/65efc9b8-5479-4ce6-b745-b9611d9b6b97 (2).mp4"
+                                    target="_blank"
+                                    className="text-primary"
+                                    rel="noreferrer"
+                                  >
+                                    Example
+                                  </a>
+                                </TooltipContent>
+                              </Tooltip>
                             </h3>
                             <p className="text-muted-foreground text-sm">
                               Create an audio-focused video with text
@@ -374,8 +424,29 @@ const NewProject = () => {
                             </svg>
                           </div>
                           <div className="">
-                            <h3 className="text-lg font-medium">
-                              Talking Head
+                            <h3 className="flex items-center gap-1 text-lg font-medium">
+                              Talking Head{" "}
+                              <Tooltip>
+                                <TooltipTrigger type="button">
+                                  <QuestionMarkCircledIcon
+                                    width={16}
+                                    height={16}
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent className="w-[200px]">
+                                  Text-based motion videos with voiceover. Ideal
+                                  for quotes, insights, and thought-leadership
+                                  clips.{" "}
+                                  <a
+                                    href="https://clipspin-api.qisqa.link/api/files/ClipSpin Template 4.mp4"
+                                    target="_blank"
+                                    className="text-primary"
+                                    rel="noreferrer"
+                                  >
+                                    Example
+                                  </a>
+                                </TooltipContent>
+                              </Tooltip>
                             </h3>
                             <p className="text-muted-foreground text-sm">
                               Create a video with a presenter speaking directly
@@ -429,7 +500,7 @@ const NewProject = () => {
                           </div>
                           <div className="">
                             <h3 className="text-lg font-medium">
-                              Professional
+                              Professional Editor
                             </h3>
                             <p className="text-muted-foreground text-sm">
                               Create a high-quality professional video

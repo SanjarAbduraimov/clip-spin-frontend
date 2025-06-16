@@ -1,7 +1,16 @@
+import { ServiceType } from "@/modules/service/constants/ServiceType";
 import { services } from "@/modules/service/services";
 import { ServiceCard } from "@/modules/service/ui/ServiceCard";
 
-export const ServicesList = () => {
+export const ServicesList = ({
+  onServiceClick,
+}: {
+  onServiceClick: (serviceType: ServiceType) => void;
+}) => {
+  const handleServiceClick = (serviceType: ServiceType) => {
+    onServiceClick(serviceType);
+  };
+
   return (
     <section>
       <div className="flex items-baseline justify-between">
@@ -19,7 +28,11 @@ export const ServicesList = () => {
 
       <div className="-my-4 flex gap-4 overflow-x-auto py-4 [&>div]:w-[250px] [&>div]:shrink-0">
         {services.map((service) => (
-          <ServiceCard key={service.id} service={service} />
+          <ServiceCard
+            onClick={() => handleServiceClick(service.type)}
+            key={service.id}
+            service={service}
+          />
         ))}
       </div>
     </section>
