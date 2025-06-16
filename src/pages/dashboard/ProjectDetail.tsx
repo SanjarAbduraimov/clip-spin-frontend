@@ -2,7 +2,6 @@ import {
   ArrowLeft,
   Copy,
   Download,
-  Edit,
   EyeIcon,
   Share2,
   Trash2,
@@ -12,6 +11,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getProjectStatusLabel } from "@/modules/project/libs/getProjectStatusLabel";
 
 import { useAuthContext } from "@/auth/hooks/useAuthContext";
+import { AuthUserType, Roles } from "@/auth/types";
+import { Alert, AlertTitle } from "@/components/Alert";
 import { Badge } from "@/components/Badge";
 import { Button, IconButton } from "@/components/Button";
 import { Card, CardContent, CardFooter } from "@/components/Card";
@@ -31,9 +32,12 @@ import {
   ProjectProgressLabels,
   ProjectStatus,
   ProjectStatusColors,
+  ProjectType,
+  ProjectTypeLabels,
 } from "@/types";
 
 import { SelectScript } from "./SelectScript";
+import { UploadVideoDialog } from "./UploadVideoDialog";
 import { Workflow } from "./Workflow";
 
 const initialLoadingProjectProgressStatuses = [
@@ -140,6 +144,8 @@ const ProjectDetail = () => {
     );
   }
 
+  console.log(project);
+
   return (
     <div className="container mx-auto max-w-[960px]">
       <Card className="my-8">
@@ -154,7 +160,10 @@ const ProjectDetail = () => {
               <ArrowLeft size={16} />
             </IconButton>
             <div>
-              <h1 className="text-3xl font-bold">{project.name}</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-3xl font-bold">{project.name}</h1>
+                <Badge>{ProjectTypeLabels[project.type]}</Badge>
+              </div>
               <div className="mt-2 flex items-center gap-3">
                 <Badge size="sm" variant={ProjectStatusColors[project.status]}>
                   {getProjectStatusLabel(project)}
@@ -188,18 +197,31 @@ const ProjectDetail = () => {
           <div className="mt-8 flex gap-8">
             <div className="shrink-0">
               <div className="mb-6">
-                <h3 className="mb-4 text-xl font-semibold">Video Preview</h3>
+                <h3 className="mb-4 text-xl font-semibold">
+                  {project.outputUrl ? "Generated Video" : "Original Video"}
+                </h3>
                 <div>
                   <div className="mx-auto max-w-[400px] overflow-hidden rounded-lg bg-black">
                     <div className="aspect-[9/16] overflow-hidden">
-                      <video
-                        src={getVideoUrl(project)}
-                        controls
-                        autoPlay
-                        className="h-full w-full object-cover"
-                      >
-                        <track kind="captions" src="" label="English" />
-                      </video>
+                      {project.sourceType === "youtube" &&
+                      !project.outputUrl ? (
+                        <iframe
+                          src={project.source?.replace("shorts", "embed")}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title="YouTube video player"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <video
+                          src={getVideoUrl(project)}
+                          controls
+                          autoPlay
+                          className="h-full w-full object-cover"
+                        >
+                          <track kind="captions" src="" label="English" />
+                        </video>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -240,13 +262,27 @@ const ProjectDetail = () => {
               {checkEditTranscriptionButtonVisibility(project) ? (
                 <SelectScript project={project} />
               ) : (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  iconLeft={<Edit size={16} className="mr-2" />}
-                >
-                  Edit
-                </Button>
+                project.selectedIdea && (
+                  <Alert className="mt-4 bg-bg-quaternary">
+                    <div className="mb-2 flex items-baseline justify-between">
+                      <AlertTitle className="text-lg">Script</AlertTitle>
+                    </div>
+                    {project.selectedIdea}
+                    {checkUploadButtonVisibility(project, user) && (
+                      <UploadVideoDialog
+                        project={project}
+                        button={
+                          <Button
+                            className="ml-auto mt-2 block"
+                            variant="outline"
+                          >
+                            Upload Video
+                          </Button>
+                        }
+                      />
+                    )}
+                  </Alert>
+                )
               )}
             </div>
           </div>
@@ -257,6 +293,10 @@ const ProjectDetail = () => {
 };
 
 function checkEditTranscriptionButtonVisibility(project: Project): boolean {
+  if (project.selectedIdea) {
+    return false;
+  }
+
   if (project.status === ProjectStatus.COMPLETED) {
     return false;
   }
@@ -287,24 +327,24 @@ function getVideoUrl(project: Project) {
   return project.sourceUrl;
 }
 
-// function checkUploadButtonVisibility(
-//   project: Project,
-//   user: AuthUserType,
-// ): boolean {
-//   if (project.status === ProjectStatus.COMPLETED) {
-//     return false;
-//   }
+function checkUploadButtonVisibility(
+  project: Project,
+  user: AuthUserType,
+): boolean {
+  if (project.status === ProjectStatus.COMPLETED) {
+    return false;
+  }
 
-//   if (
-//     project.progress === ProjectProgress.INPUT_ANALYZED &&
-//     project.type === ProjectType.professional &&
-//     user.role === Roles.ADMIN
-//   ) {
-//     return true;
-//   }
+  if (
+    project.progress === ProjectProgress.INPUT_ANALYZED &&
+    project.type === ProjectType.professional &&
+    user.role === Roles.ADMIN
+  ) {
+    return true;
+  }
 
-//   return false;
-// }
+  return false;
+}
 
 // Check component moved to the top of the file
 

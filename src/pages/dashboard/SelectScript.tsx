@@ -3,16 +3,27 @@ import { useEffect, useState } from "react";
 
 import { Alert, AlertTitle } from "@/components/Alert";
 import { Button } from "@/components/Button";
+import { useGenerateVideo } from "@/hooks/api";
 import { Project } from "@/types";
 
+import { EditIdeaDialog } from "./EditIdeaDialog";
+
 export const SelectScript = ({ project }: { project: Project }) => {
+  const { mutateAsync: generateVideo, isPending } = useGenerateVideo();
   const [activeScriptIndex, setActiveScriptIndex] = useState<number>(0);
 
-  const [currentScript, setCurrentScript] = useState<string>("");
+  const [suggestedIdeas, setSuggestedIdeas] = useState<string[]>([]);
 
   useEffect(() => {
-    setCurrentScript(project.suggestedIdeas[activeScriptIndex]);
-  }, [activeScriptIndex]);
+    setSuggestedIdeas(project.suggestedIdeas);
+  }, []);
+
+  const handleGenerateVideoClick = () => {
+    generateVideo({
+      projectId: project.id,
+      script: suggestedIdeas[activeScriptIndex],
+    });
+  };
 
   return (
     <div>
@@ -20,7 +31,7 @@ export const SelectScript = ({ project }: { project: Project }) => {
         Select Script to generate video
       </h3>
       <div className="flex flex-col gap-4 overflow-auto" role="radiogroup">
-        {project.suggestedIdeas.map((idea, index) => (
+        {suggestedIdeas.map((idea, index) => (
           <div className="relative w-full">
             <input
               id={`script-${index}`}
@@ -52,19 +63,33 @@ export const SelectScript = ({ project }: { project: Project }) => {
       <Alert className="mt-4 bg-bg-quaternary">
         <div className="mb-2 flex items-baseline justify-between">
           <AlertTitle className="text-lg">Script</AlertTitle>
-          <Button variant="link" size="link" iconRight={<Edit size={16} />}>
-            Edit
-          </Button>
+          <EditIdeaDialog
+            initialScript={suggestedIdeas[activeScriptIndex]}
+            button={
+              <Button variant="link" size="link" iconRight={<Edit size={16} />}>
+                Edit
+              </Button>
+            }
+            onSave={(script) => {
+              setSuggestedIdeas((prev) => {
+                const newIdeas = [...prev];
+                newIdeas[activeScriptIndex] = script;
+                return newIdeas;
+              });
+            }}
+          />
         </div>
-        {currentScript}
+        {suggestedIdeas[activeScriptIndex]}
       </Alert>
 
       <Button
         className="ml-auto mt-2 flex"
         size="sm"
+        disabled={isPending}
+        onClick={handleGenerateVideoClick}
         iconRight={<ArrowRight size={16} />}
       >
-        Generate Video
+        {isPending ? "Requesting..." : "Generate Video"}
       </Button>
     </div>
   );

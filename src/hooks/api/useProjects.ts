@@ -174,7 +174,16 @@ export const useGenerateVideo = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (projectId: string) => generateVideo(projectId),
+    mutationFn: async ({
+      projectId,
+      script,
+    }: {
+      projectId: string;
+      script: string;
+    }) => {
+      await updateProject(projectId, { selected_idea: { script } });
+      await generateVideo(projectId);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },

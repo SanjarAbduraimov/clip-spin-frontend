@@ -3,7 +3,7 @@
 import { BadgeProps } from "@/components/Badge";
 import { config } from "@/constants/config";
 
-export type VideoSource = "YouTube" | "TikTok" | "Instagram";
+export type VideoSource = "youtube" | "tiktok" | "instagram";
 
 export type VideoFormat = "MP4" | "MOV";
 
@@ -88,7 +88,7 @@ export interface ProjectResponse {
     title: string;
     input: {
       url: string;
-      source?: string;
+      source?: VideoSource;
       file_key?: string;
     };
     suggested_ideas: { script: string }[];
@@ -96,7 +96,10 @@ export interface ProjectResponse {
     progress: ProjectProgress;
     type: ProjectType;
     file_key: string;
-    result: {
+    selected_idea?: {
+      script: string;
+    };
+    output?: {
       file_key: string;
     };
   };
@@ -123,13 +126,15 @@ export interface Project {
   progress: ProjectProgress;
   createdAt: string;
   completedAt?: string;
+  source?: string;
   sourceUrl?: string;
   sourceFile?: string;
-  sourceType: VideoSource;
+  sourceType?: VideoSource;
   type: ProjectType;
   originalDuration?: number;
   generatedDuration?: number;
   suggestedIdeas: string[];
+  selectedIdea?: string;
   outputSettings?: {
     resolution: Resolution;
     aspectRatio: AspectRatio;
@@ -145,7 +150,7 @@ export interface Project {
 
 export interface ProjectUpdateBody {
   title?: string;
-  input_summary?: string;
+  selected_idea?: { script: string };
 }
 
 export interface Presenter {
@@ -217,30 +222,18 @@ export const ProjectProgressLabels: Record<ProjectProgress, string> = {
 export function projectResponseToProject(
   projectResponse: ProjectResponse["data"],
 ): Project {
-  let sourceType: VideoSource = "YouTube";
-
-  if (
-    projectResponse.input.url.includes("youtube.com") ||
-    projectResponse.input.url.includes("youtu.be")
-  ) {
-    sourceType = "YouTube";
-  } else if (projectResponse.input.url.includes("instagram.com")) {
-    sourceType = "Instagram";
-  } else if (
-    projectResponse.input.url.includes("tiktok.com") ||
-    projectResponse.input.url.includes("vm.tiktok.com")
-  ) {
-    sourceType = "TikTok";
-  }
+  const sourceType = projectResponse.input.source;
 
   return {
     id: projectResponse._id,
     name: projectResponse.title,
     status: projectResponse.status,
     createdAt: new Date().toISOString(),
+    selectedIdea: projectResponse.selected_idea?.script,
     suggestedIdeas: projectResponse.suggested_ideas.map((idea) => idea.script),
     progress: projectResponse.progress,
     completedAt: new Date().toISOString(),
+    source: projectResponse.input.url,
     sourceUrl: `${config.apiBaseUrl}/files/${projectResponse.input.file_key}`,
     sourceFile: undefined,
     sourceType,
@@ -249,8 +242,8 @@ export function projectResponseToProject(
     generatedDuration: undefined,
     outputSettings: undefined,
     presenterSettings: undefined,
-    outputUrl: projectResponse.result?.file_key
-      ? `${config.apiBaseUrl}/files/${projectResponse.result.file_key}`
+    outputUrl: projectResponse.output?.file_key
+      ? `${config.apiBaseUrl}/files/${projectResponse.output.file_key}`
       : undefined,
   };
 }

@@ -31,7 +31,7 @@ export const Workflow = ({ project }: WorkflowProps) => {
             </div>
             <p className="text-sm font-medium">Video Source</p>
             <p className="text-center text-xs text-gray-500">
-              Video uploaded or URL provided
+              Video URL provided
             </p>
           </div>
 

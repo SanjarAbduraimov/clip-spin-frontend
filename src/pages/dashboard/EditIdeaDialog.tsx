@@ -10,37 +10,28 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/Dialog";
-import { useUpdateProject } from "@/hooks/api";
 
 export const EditIdeaDialog = ({
   initialScript,
-  projectId,
   button,
+  onSave,
 }: {
   initialScript: string;
-  projectId: string;
   button: React.ReactNode;
+  onSave: (script: string) => void;
 }) => {
   const [open, setOpen] = useState(false);
 
-  const updateProjectMutation = useUpdateProject();
-
   const [script, setScript] = useState(initialScript);
-
-  const handleSave = () => {
-    updateProjectMutation
-      .mutateAsync({
-        id: projectId,
-        data: {
-          input_summary: script,
-        },
-      })
-      .then(() => setOpen(false));
-  };
 
   useEffect(() => {
     setScript(initialScript);
   }, [initialScript]);
+
+  const handleSave = () => {
+    onSave(script);
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -49,14 +40,13 @@ export const EditIdeaDialog = ({
         <DialogHeader>
           <DialogTitle>Edit Idea</DialogTitle>
         </DialogHeader>
-        <Textarea value={script} onChange={(e) => setScript(e.target.value)} />
+        <Textarea
+          textareaClassName="h-[200px]"
+          value={script}
+          onChange={(e) => setScript(e.target.value)}
+        />
         <DialogFooter>
-          <Button
-            onClick={handleSave}
-            disabled={updateProjectMutation.isPending}
-          >
-            Save
-          </Button>
+          <Button onClick={handleSave}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
