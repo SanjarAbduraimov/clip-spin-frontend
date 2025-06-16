@@ -1,6 +1,8 @@
 import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
 
+import { ProjectType } from "@/types";
+
 // Clip Spin routes
 const ClipSpinLayout = lazy(() => import("@/layout/ClipSpinLayout"));
 const ClipSpinDashboard = lazy(() => import("@/pages/dashboard/Dashboard"));
@@ -19,7 +21,7 @@ export const dashboard: RouteObject[] = [
       },
       {
         path: "new-project",
-        element: <NewProject />,
+        element: <NewProject projectType={ProjectType.slide_show} />,
       },
       {
         path: "project/:projectId",
