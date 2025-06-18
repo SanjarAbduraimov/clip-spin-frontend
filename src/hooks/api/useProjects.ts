@@ -37,7 +37,7 @@ export const useProjects = () => {
     const interval = setInterval(() => {
       if (!authenticated) return;
       res.refetch();
-    }, 700);
+    }, 100000);
 
     return () => clearInterval(interval);
   }, [authenticated]);
@@ -59,7 +59,7 @@ export const useProjectsRequests = () => {
     const interval = setInterval(() => {
       if (!authenticated) return;
       res.refetch();
-    }, 700);
+    }, 100000);
 
     return () => clearInterval(interval);
   }, [authenticated]);

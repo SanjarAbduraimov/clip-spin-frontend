@@ -39,6 +39,7 @@ export const endpoints = {
   auth: {
     // profile
     me: "/profile",
+    subscriptions: "/profile/subscriptions",
     // sign-up-with-phone-number
     verify_phone_otp: "/auth/verify-phone-otp",
     send_otp_code: "/auth/otp/phone",

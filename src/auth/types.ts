@@ -1,5 +1,7 @@
 import { Dispatch } from "react";
 
+import { ProjectType } from "@/types";
+
 export interface ISignUpWithEmail {
   fio: string;
   email: string;
@@ -47,11 +49,37 @@ export enum Roles {
   USER = "user",
 }
 
+export type AuthSubscriptionType = {
+  _id: string;
+  subscription_plan: {
+    _id: string;
+    name: string;
+    price: number;
+    credits: number;
+    project_type_prices: {
+      project_type: ProjectType;
+      credit_cost: number;
+    }[];
+    stripe_price_id: string;
+  };
+  monthly_credits: {
+    total: number;
+    remaining: number;
+  };
+  purchased_credits: {
+    total: number;
+    remaining: number;
+  };
+  expires_at: string;
+  created_at: string;
+};
+
 export type AuthUserType = {
   email: string;
   _id: string;
   role: Roles;
   accessToken: string;
+  subscription?: AuthSubscriptionType & { total_credits: number };
 };
 
 export type AuthStateType = {

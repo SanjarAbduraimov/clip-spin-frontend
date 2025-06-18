@@ -1,11 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
-import { useEffect } from "react";
+import { CircleAlert } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { projectSettingsService } from "@/modules/project/services/projectSettingsService";
+import { useSubscriptionPlans } from "@/modules/subscription/hooks/useSubscription";
+import { PurchaseCredits } from "@/modules/subscription/ui/PurchaseCredits";
 
 import { useAuthContext } from "@/auth/hooks/useAuthContext";
 import {
@@ -17,6 +20,7 @@ import {
   FormMessage,
 } from "@/components/_form/Form";
 import { Input } from "@/components/_form/Input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/Alert";
 import { Button } from "@/components/Button";
 import {
   Card,
@@ -75,9 +79,13 @@ const NewProject = ({ projectType }: NewProjectProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const { authenticated } = useAuthContext();
+  const [open, setOpen] = useState(false);
+
+  const { authenticated, user } = useAuthContext();
 
   const createProjectMutation = useCreateProjectFromUrl();
+
+  const { data: plan } = useSubscriptionPlans();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -92,6 +100,8 @@ const NewProject = ({ projectType }: NewProjectProps) => {
     },
   });
 
+  const type = form.watch("type");
+
   useEffect(() => {
     form.setValue("type", projectType);
   }, [projectType]);
@@ -100,7 +110,7 @@ const NewProject = ({ projectType }: NewProjectProps) => {
     try {
       const { url, name } = values;
 
-      if (!authenticated) {
+      if (!authenticated || !user) {
         const videoCreationURL = `/dashboard/ai-generation`;
         projectSettingsService.saveToLocalDb({
           name,
@@ -109,10 +119,11 @@ const NewProject = ({ projectType }: NewProjectProps) => {
         });
         navigate(`/auth/sign-in?redirect=${videoCreationURL}`);
       }
+
       await createProjectMutation.mutateAsync({
         name,
         url,
-        type: projectType,
+        type,
       });
 
       form.reset();
@@ -128,6 +139,14 @@ const NewProject = ({ projectType }: NewProjectProps) => {
           "There was an error creating your project. Please try again.",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleUpgradeClick = () => {
+    if (!user?.subscription) {
+      navigate("/pricing");
+    } else {
+      setOpen(true);
     }
   };
 
@@ -269,6 +288,12 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                           htmlFor="slide-show"
                           className="flex cursor-pointer flex-col items-start rounded-lg border p-4 transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/5"
                         >
+                          <div className="absolute right-2 top-8">
+                            <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                              {plan?.prices[ProjectType.slide_show] || 0}{" "}
+                              Credits
+                            </span>
+                          </div>
                           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -336,6 +361,12 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                           htmlFor="text-audiogram"
                           className="flex cursor-pointer flex-col items-start rounded-lg border p-4 transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/5"
                         >
+                          <div className="absolute right-2 top-8">
+                            <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                              {plan?.prices[ProjectType.text_audiogram] || 0}{" "}
+                              Credits
+                            </span>
+                          </div>
                           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -406,6 +437,12 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                           htmlFor="talking-head"
                           className="flex cursor-pointer flex-col items-start rounded-lg border p-4 transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/5"
                         >
+                          <div className="absolute right-2 top-8">
+                            <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                              {plan?.prices[ProjectType.talking_head] || 0}{" "}
+                              Credits
+                            </span>
+                          </div>
                           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -474,6 +511,12 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                           htmlFor="professional"
                           className="flex cursor-pointer flex-col items-start rounded-lg border p-4 transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/5"
                         >
+                          <div className="absolute right-2 top-8">
+                            <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                              {plan?.prices[ProjectType.professional] || 0}{" "}
+                              Credits
+                            </span>
+                          </div>
                           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -518,7 +561,32 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                 </FormItem>
               )}
             />
-
+            {((user?.subscription &&
+              plan?.prices[type] &&
+              user.subscription?.total_credits < plan?.prices[type]) ||
+              !user?.subscription) && (
+              <Alert variant="destructive" className="flex items-start">
+                <div className="mr-4">
+                  <CircleAlert size={20} className="text-error" />
+                </div>
+                <div>
+                  <AlertTitle>Not enough credits</AlertTitle>
+                  <AlertDescription>
+                    You don&apos;t have enough credits to create this project.
+                    Please upgrade your subscription.
+                  </AlertDescription>
+                </div>
+                <div className="ml-auto">
+                  <Button
+                    onClick={handleUpgradeClick}
+                    type="button"
+                    variant="outline"
+                  >
+                    Upgrade
+                  </Button>
+                </div>
+              </Alert>
+            )}
             <Button type="submit" disabled={createProjectMutation.isPending}>
               {createProjectMutation.isPending
                 ? "Creating..."
@@ -527,6 +595,8 @@ const NewProject = ({ projectType }: NewProjectProps) => {
           </form>
         </Form>
       </CardContent>
+
+      <PurchaseCredits open={open} onOpenChange={setOpen} />
     </Card>
   );
 };

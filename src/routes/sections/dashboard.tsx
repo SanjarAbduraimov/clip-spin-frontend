@@ -1,6 +1,10 @@
 import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
 
+import { PaymentError } from "@/modules/subscription/ui/PaymentError";
+import { PaymentSuccess } from "@/modules/subscription/ui/PaymentSuccess";
+
+import { Pricing, Usage } from "@/pages/dashboard";
 import { ProjectType } from "@/types";
 
 // Clip Spin routes
@@ -20,6 +24,18 @@ export const dashboard: RouteObject[] = [
         element: <ClipSpinDashboard />,
       },
       {
+        path: "pricing",
+        element: <Pricing />,
+      },
+      {
+        path: "payment/success",
+        element: <PaymentSuccess />,
+      },
+      {
+        path: "payment/error",
+        element: <PaymentError />,
+      },
+      {
         path: "new-project",
         element: <NewProject projectType={ProjectType.slide_show} />,
       },
@@ -30,6 +46,10 @@ export const dashboard: RouteObject[] = [
       {
         path: "requests",
         element: <Requests />,
+      },
+      {
+        path: "usage",
+        element: <Usage />,
       },
     ],
   },

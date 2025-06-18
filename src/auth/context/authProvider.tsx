@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useReducer } from "react";
 import {
   ActionMapType,
   AuthStateType,
+  AuthSubscriptionType,
   AuthUserType,
   Payload,
   Types,
@@ -82,11 +83,29 @@ export function AuthProvider({ children }: Props) {
         const { data } = await http.get<{
           data: AuthUserType;
         }>(endpoints.auth.me);
+
+        const { data: subscription } = await http
+          .get<{
+            data: AuthSubscriptionType;
+          }>(endpoints.auth.subscriptions)
+          .then((res) => res.data);
+
         const { data: user } = data;
 
         dispatch({
           type: Types.INITIAL,
-          payload: { user: { ...user, accessToken } },
+          payload: {
+            user: {
+              ...user,
+              accessToken,
+              subscription: subscription && {
+                ...subscription,
+                total_credits:
+                  subscription.monthly_credits.remaining +
+                  subscription.purchased_credits.remaining,
+              },
+            },
+          },
         });
       } catch (error) {
         dispatch({ type: Types.INITIAL, payload: { user: null } });

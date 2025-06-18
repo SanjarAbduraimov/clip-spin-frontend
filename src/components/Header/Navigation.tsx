@@ -13,11 +13,18 @@ export const Navigation = () => {
             <Link to="/requests">Requests</Link>
           </li>
         )}
+        {!user?.subscription && (
+          <li>
+            <Link to="/pricing">Pricing</Link>
+          </li>
+        )}
+        {user && (
+          <li>
+            <Link to="/usage">Usage</Link>
+          </li>
+        )}
         <li>
           <Link to="/">Services</Link>
-        </li>
-        <li>
-          <Link to="/projects">Projects</Link>
         </li>
       </ul>
     </nav>
