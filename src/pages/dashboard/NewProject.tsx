@@ -85,7 +85,8 @@ const NewProject = ({ projectType }: NewProjectProps) => {
 
   const createProjectMutation = useCreateProjectFromUrl();
 
-  const { data: plan } = useSubscriptionPlans();
+  const { data: plans } = useSubscriptionPlans();
+  const plan = plans?.[0];
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

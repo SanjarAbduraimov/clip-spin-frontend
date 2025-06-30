@@ -9,7 +9,8 @@ export const useSubscriptionPlans = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["subscription-plans"],
     queryFn: () => subscriptionAPI.getPlans(),
-    select: (res) => res.map(subscriptionMapper)?.[0],
+    select: (res) =>
+      res.map(subscriptionMapper).sort((a, b) => a.price - b.price),
   });
 
   return {

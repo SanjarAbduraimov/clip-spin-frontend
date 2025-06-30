@@ -44,14 +44,14 @@ const PricingCard = ({ plan }: PricingCardProps) => {
   };
 
   return (
-    <div className="mx-auto max-w-sm">
+    <div className="max-w-sm">
       <div className="relative rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900">
         {/* Popular Badge */}
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 transform">
+        {/* <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 transform">
           <div className="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-1 text-sm font-semibold text-white">
             Most Popular
           </div>
-        </div>
+        </div> */}
 
         <div className="p-6 text-center">
           <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-600">
@@ -60,9 +60,6 @@ const PricingCard = ({ plan }: PricingCardProps) => {
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
             {plan.name}
           </h3>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Perfect for creators
-          </p>
         </div>
 
         <div className="px-6 pb-6 text-center">
@@ -107,16 +104,17 @@ const PricingCard = ({ plan }: PricingCardProps) => {
                 Talking Heads ({talkingHeadCreditsCost} credits each)
               </span>
             </li>
-            {professionalCreditsCost && (
-              <li className="flex items-center">
-                <Check className="mr-3 h-5 w-5 flex-shrink-0 text-green-500" />
-                <span className="text-gray-700 dark:text-gray-300">
-                  {Math.floor(plan.credits / (professionalCreditsCost || 0)) *
-                    3}{" "}
-                  Professional Editor ({professionalCreditsCost} credits each)
-                </span>
-              </li>
-            )}
+            {professionalCreditsCost &&
+              plan.credits >= professionalCreditsCost && (
+                <li className="flex items-center">
+                  <Check className="mr-3 h-5 w-5 flex-shrink-0 text-green-500" />
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {Math.floor(plan.credits / (professionalCreditsCost || 0)) *
+                      3}{" "}
+                    Professional Editor ({professionalCreditsCost} credits each)
+                  </span>
+                </li>
+              )}
             <li className="flex items-center">
               <Check className="mr-3 h-5 w-5 flex-shrink-0 text-green-500" />
               <span className="text-gray-700 dark:text-gray-300">
@@ -148,7 +146,7 @@ const PricingCard = ({ plan }: PricingCardProps) => {
           </Button>
         </div>
 
-        <div className="border-t border-gray-200 px-6 pb-6 pt-4 dark:border-gray-700">
+        {/* <div className="border-t border-gray-200 px-6 pb-6 pt-4 dark:border-gray-700">
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Need more credits?
@@ -160,7 +158,7 @@ const PricingCard = ({ plan }: PricingCardProps) => {
               </span>
             </p>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

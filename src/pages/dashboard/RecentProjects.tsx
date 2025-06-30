@@ -29,6 +29,7 @@ import {
   useDuplicateProject,
   useProjects,
 } from "@/hooks/api";
+import { useShareProject } from "@/hooks/useShareProject";
 import {
   Project,
   ProjectStatus,
@@ -43,6 +44,8 @@ export const RecentProjects = () => {
   );
 
   const { data: projects, isLoading, error } = useProjects();
+
+  const { shareProject } = useShareProject();
 
   const deleteProjectMutation = useDeleteProject();
   const duplicateProjectMutation = useDuplicateProject();
@@ -200,10 +203,20 @@ export const RecentProjects = () => {
                       <div className="flex justify-end gap-2">
                         {project.status === ProjectStatus.COMPLETED && (
                           <>
-                            <IconButton variant="ghost">
-                              <Download size={16} />
+                            <IconButton asChild variant="ghost">
+                              <a
+                                href={project.sourceUrl}
+                                download
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <Download size={16} />
+                              </a>
                             </IconButton>
-                            <IconButton variant="ghost">
+                            <IconButton
+                              onClick={() => shareProject(project)}
+                              variant="ghost"
+                            >
                               <Share2 size={16} />
                             </IconButton>
                           </>

@@ -25,6 +25,7 @@ import {
 import { PageLoading } from "@/components/PageLoading";
 import { Skeleton } from "@/components/Skeleton";
 import { useDeleteProject, useDuplicateProject, useProject } from "@/hooks/api";
+import { useShareProject } from "@/hooks/useShareProject";
 import { useToast } from "@/hooks/useToast";
 import {
   Project,
@@ -56,6 +57,7 @@ const ProjectDetail = () => {
   const { data: project, isLoading } = useProject(projectId || "");
   const deleteProjectMutation = useDeleteProject();
   const duplicateProjectMutation = useDuplicateProject();
+  const { shareProject } = useShareProject();
 
   const handleDeleteProject = () => {
     if (!projectId) return;
@@ -226,7 +228,7 @@ const ProjectDetail = () => {
                   </div>
                 </div>
                 {project.status === ProjectStatus.COMPLETED && (
-                  <CardFooter className="flex justify-end gap-2">
+                  <CardFooter className="mt-4 grid grid-cols-3 gap-2">
                     <Button variant="outline" asChild>
                       <a
                         href={project.sourceUrl}
@@ -249,7 +251,10 @@ const ProjectDetail = () => {
                         Download
                       </a>
                     </Button>
-                    <Button variant="outline">
+                    <Button
+                      variant="outline"
+                      onClick={() => shareProject(project)}
+                    >
                       <Share2 size={16} className="mr-2" />
                       Share
                     </Button>

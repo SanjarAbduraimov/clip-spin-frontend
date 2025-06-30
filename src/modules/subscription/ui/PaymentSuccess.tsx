@@ -2,21 +2,8 @@ import { ArrowRight, CheckCircle, Home, MailIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/Button";
-import { PageLoading } from "@/components/PageLoading";
-
-import { useSubscriptionPlans } from "../hooks/useSubscription";
 
 export const PaymentSuccess = () => {
-  const { data: plan, isLoading } = useSubscriptionPlans();
-
-  if (isLoading) {
-    return <PageLoading />;
-  }
-
-  if (!plan) {
-    return null;
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-green-50 to-emerald-50 p-4 dark:from-gray-900 dark:to-gray-800">
       <div className="w-full max-w-md">

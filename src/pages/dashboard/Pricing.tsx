@@ -6,11 +6,15 @@ import PricingCard from "@/modules/subscription/ui/PricingCard";
 import { PageLoading } from "@/components/PageLoading";
 
 export const Pricing: FC = () => {
-  const { data, isLoading } = useSubscriptionPlans();
+  const { data: plans, isLoading } = useSubscriptionPlans();
 
   if (isLoading) {
     return <PageLoading />;
   }
 
-  return <div className="py-8">{data && <PricingCard plan={data} />}</div>;
+  return (
+    <div className="flex flex-col flex-wrap items-center justify-center gap-4 py-8 md:flex-row">
+      {plans && plans.map((plan) => <PricingCard key={plan._id} plan={plan} />)}
+    </div>
+  );
 };
