@@ -44,7 +44,6 @@ import { Workflow } from "./Workflow";
 const initialLoadingProjectProgressStatuses = [
   ProjectProgress.FETCHING_INPUT,
   ProjectProgress.INPUT_FETCHED,
-  ProjectProgress.ANALYZING_INPUT,
 ];
 
 const ProjectDetail = () => {
@@ -146,13 +145,11 @@ const ProjectDetail = () => {
     );
   }
 
-  console.log(project);
-
   return (
-    <div className="container mx-auto max-w-[960px]">
+    <div className="container mx-auto max-w-[960px] px-4">
       <Card className="my-8">
-        <CardContent className="p-6">
-          <div className="mb-8 flex items-start">
+        <CardContent className="p-4 md:p-6">
+          <div className="mb-8 flex flex-col items-start gap-2 md:flex-row">
             <IconButton
               variant="ghost"
               size="sm"
@@ -164,15 +161,21 @@ const ProjectDetail = () => {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-3xl font-bold">{project.name}</h1>
-                <Badge>{ProjectTypeLabels[project.type]}</Badge>
+                <Badge className="whitespace-nowrap">
+                  {ProjectTypeLabels[project.type]}
+                </Badge>
               </div>
               <div className="mt-2 flex items-center gap-3">
-                <Badge size="sm" variant={ProjectStatusColors[project.status]}>
+                <Badge
+                  className="whitespace-nowrap"
+                  size="sm"
+                  variant={ProjectStatusColors[project.status]}
+                >
                   {getProjectStatusLabel(project)}
                 </Badge>
               </div>
             </div>
-            <div className="ml-auto">
+            <div className="md:ml-auto">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline">Actions</Button>
@@ -196,7 +199,7 @@ const ProjectDetail = () => {
 
           <Workflow project={project} />
 
-          <div className="mt-8 flex gap-8">
+          <div className="mt-8 flex flex-col gap-8 md:flex-row">
             <div className="shrink-0">
               <div className="mb-6">
                 <h3 className="mb-4 text-xl font-semibold">

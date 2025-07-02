@@ -20,11 +20,10 @@ const emailOTPSchema = z.object({
 type EmailOTPFormSchema = z.infer<typeof emailOTPSchema>;
 
 interface EmailOtpProps {
-  code: number;
   codeHash: string;
   email: string;
 }
-export const EmailOtp = ({ code, codeHash, email }: EmailOtpProps) => {
+export const EmailOtp = ({ codeHash, email }: EmailOtpProps) => {
   const { t } = useTranslation("email-verification");
 
   const { mutateAsync, isPending } = useVerifyEmail();
@@ -32,13 +31,15 @@ export const EmailOtp = ({ code, codeHash, email }: EmailOtpProps) => {
   const navigate = useNavigate();
   const form = useForm<EmailOTPFormSchema>({
     resolver: zodResolver(emailOTPSchema),
-    defaultValues: {
-      code: code.toString(),
-    },
+    defaultValues: {},
   });
   const handleSubmit = async (values: EmailOTPFormSchema) => {
     try {
-      await mutateAsync({ email, code, code_hash: codeHash });
+      await mutateAsync({
+        email,
+        code: Number(values.code),
+        code_hash: codeHash,
+      });
       navigate("/");
     } catch (error) {
       // console.log(error);

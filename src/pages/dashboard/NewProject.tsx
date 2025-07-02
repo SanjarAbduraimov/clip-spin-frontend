@@ -274,7 +274,7 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                       className="flex flex-col gap-4 overflow-auto sm:flex-row"
                       role="radiogroup"
                     >
-                      <div className="relative w-full min-w-[250px] max-w-[300px]">
+                      <div className="relative w-full md:min-w-[250px] md:max-w-[300px]">
                         <input
                           type="radio"
                           id="slide-show"
@@ -347,7 +347,7 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                         </label>
                       </div>
 
-                      <div className="relative w-full min-w-[250px] max-w-[300px]">
+                      <div className="relative w-full md:min-w-[250px] md:max-w-[300px]">
                         <input
                           type="radio"
                           id="text-audiogram"
@@ -423,7 +423,7 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                         </label>
                       </div>
 
-                      <div className="relative w-full min-w-[250px] max-w-[300px]">
+                      <div className="relative w-full md:min-w-[250px] md:max-w-[300px]">
                         <input
                           type="radio"
                           id="talking-head"
@@ -497,7 +497,7 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                         </label>
                       </div>
 
-                      <div className="relative w-full min-w-[250px] max-w-[300px]">
+                      <div className="relative w-full md:min-w-[250px] md:max-w-[300px]">
                         <input
                           type="radio"
                           id="professional"

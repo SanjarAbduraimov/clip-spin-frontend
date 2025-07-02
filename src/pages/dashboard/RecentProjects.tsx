@@ -192,12 +192,17 @@ export const RecentProjects = () => {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={ProjectStatusColors[project.status]}>
+                      <Badge
+                        className="whitespace-nowrap"
+                        variant={ProjectStatusColors[project.status]}
+                      >
                         {getProjectStatusLabel(project)}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge>{ProjectTypeLabels[project.type]}</Badge>
+                      <Badge className="whitespace-nowrap">
+                        {ProjectTypeLabels[project.type]}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
