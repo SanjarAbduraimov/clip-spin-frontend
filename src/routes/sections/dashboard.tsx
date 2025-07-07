@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
 
+import { PaymentCancel } from "@/modules/subscription/ui/PaymentCancel";
 import { PaymentError } from "@/modules/subscription/ui/PaymentError";
 import { PaymentSuccess } from "@/modules/subscription/ui/PaymentSuccess";
 
@@ -30,6 +31,10 @@ export const dashboard: RouteObject[] = [
       {
         path: "payment/success",
         element: <PaymentSuccess />,
+      },
+      {
+        path: "payment/cancel",
+        element: <PaymentCancel />,
       },
       {
         path: "payment/error",
