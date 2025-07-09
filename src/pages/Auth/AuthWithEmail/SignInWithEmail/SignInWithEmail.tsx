@@ -13,6 +13,8 @@ import { AuthLayout } from "@/layout/Auth";
 import { AuthWithGoogle } from "@/pages/Auth/AuthGoogle/AuthWithGoogle";
 
 import { EmailOtp } from "../../AuthOtp/EmailOtp";
+import { Button } from "@/components/Button";
+import { Link } from "@/components/Link";
 
 const signInSchema = z.object({
   email: z.string().email(),
@@ -21,7 +23,7 @@ const signInSchema = z.object({
 type SignInSchemaForm = z.infer<typeof signInSchema>;
 
 export const SignInWithEmail = () => {
-  const { t } = useTranslation("sign-in");
+  const { t } = useTranslation("sign-up");
 
   const [emailResponse, setEmailResponse] = useState<{
     code: number;
@@ -86,13 +88,19 @@ export const SignInWithEmail = () => {
                   size="lg"
                   className="w-full text-md"
                 >
-                  {t("signInButtonTitle")}
+                  {t("signUpButtonTitle")}
                 </LoadingButton>
                 <AuthWithGoogle />
               </div>
             </div>
           </form>
         </Form>
+        <div className="flex flex-row items-center gap-1">
+          <p className="text-center text-sm text-gray">{t("footerTitle")} </p>
+          <Button variant="primary-link" size="link" asChild>
+            <Link to="/auth/login">{t("urlTitle")}</Link>
+          </Button>
+        </div>
       </div>
     </AuthLayout>
   );

@@ -51,6 +51,7 @@ export const useVerifyEmail = (): UseMutationResult<
       email,
       code,
       code_hash,
+      ...values
     }: {
       email: string;
       code: number;
@@ -61,7 +62,7 @@ export const useVerifyEmail = (): UseMutationResult<
           data: {
             access_token: string;
           };
-        }>(endpoints.auth.verify_email, { email, code, code_hash })
+        }>(endpoints.auth.verify_email, { email, code, code_hash, ...values })
         .then((res) => res.data),
   });
 };

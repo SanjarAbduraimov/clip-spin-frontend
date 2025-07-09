@@ -3,7 +3,6 @@ import { Dispatch } from "react";
 import { ProjectType } from "@/types";
 
 export interface ISignUpWithEmail {
-  fio: string;
   email: string;
   password: string;
 }

@@ -45,10 +45,11 @@ export const endpoints = {
     send_otp_code: "/auth/otp/phone",
     sign_up_phone: "/auth/signup-phone",
     sign_in_phone: "/auth/signin-phone",
-    verify_email: "/auth/signin",
+    verify_email: "/auth/signup",
     // sign-in-with-email
     sign_in_with_email: "/auth/otp/email",
     sign_up_with_email: "/auth/signup-email",
+    login_with_email: "/auth/login",
     // sign-in-with-google
     sign_in_with_google: "/auth/google/callback",
     // logout

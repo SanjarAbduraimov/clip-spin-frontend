@@ -1,10 +1,21 @@
 {
-    "title": "Check your email",
-    "description": "We sent a verification link to",
-    "buttonTitle": "Verify email",
-    "resendText": "Didn't receive the email?",
-    "resendButton": "Click to resend",
-    "footerTitle": "Back to log in",
-    "verificationCodeLabel": "Verification code",
-    "verificationCodePlaceholder": "Enter verification code"
+  "title": "Check your email",
+  "description": "We sent a verification link to",
+  "buttonTitle": "Sign up",
+  "resendText": "Didn't receive the email?",
+  "resendButton": "Click to resend",
+  "footerTitle": "Back to log in",
+  "verificationCodeLabel": "Verification code",
+  "verificationCodePlaceholder": "Enter verification code",
+  "fullNameLabel": "Full name",
+  "fullNamePlaceholder": "Enter your full name",
+  "emailLabel": "Email",
+  "emailPlaceholder": "Enter your email address",
+  "passwordLabel": "Password",
+  "passwordPlaceholder": "Enter your password",
+  "phoneNumberLabel": "Phone number",
+  "phoneNumberPlaceholder": "Enter your phone number (optional)",
+  "codeHashLabel": "Code hash",
+  "codeHashPlaceholder": "Enter code hash"
 }
+

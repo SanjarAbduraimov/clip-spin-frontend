@@ -6,14 +6,25 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { useVerifyEmail } from "@/auth/hooks/useVerifyEmail";
-import { Form } from "@/components/_form/Form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/_form/Form";
 import { OTPField } from "@/components/_rhf/OTP";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card/Card";
 import { LoadingButton } from "@/components/LoadingButton/LoadingButton";
 import { AuthLayout } from "@/layout/Auth";
+import { Input } from "@/components/_form/Input";
 
 const emailOTPSchema = z.object({
+  full_name: z.string(),
+  password: z.string(),
+  phone_number: z.string().optional(),
   code: z.string().min(6),
 });
 
@@ -36,6 +47,7 @@ export const EmailOtp = ({ codeHash, email }: EmailOtpProps) => {
   const handleSubmit = async (values: EmailOTPFormSchema) => {
     try {
       await mutateAsync({
+        ...values,
         email,
         code: Number(values.code),
         code_hash: codeHash,
@@ -69,14 +81,80 @@ export const EmailOtp = ({ codeHash, email }: EmailOtpProps) => {
             onSubmit={form.handleSubmit(handleSubmit)}
             className="flex w-full flex-col items-center justify-center gap-6"
           >
-            <div className="flex items-center justify-center">
-              <OTPField
+            <div className="flex w-full flex-col gap-4">
+              <FormField
+                control={form.control}
+                name="full_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("fullNameLabel")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t("fullNamePlaceholder")}
+                        type="text"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("passwordLabel")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t("passwordPlaceholder")}
+                        type="password"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phone_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("phoneNumberLabel")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t("phoneNumberPlaceholder")}
+                        type="tel"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="code"
-                label={t("verificationCodeLabel")}
-                // @ts-expect-error
-                placeholder={t("verificationCodePlaceholder")}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("verificationCodeLabel")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t("verificationCodePlaceholder")}
+                        type="number"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
+
             <LoadingButton
               type="submit"
               isLoading={isPending}
