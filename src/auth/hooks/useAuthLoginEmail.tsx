@@ -1,11 +1,13 @@
+import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { Types } from "@/auth/types";
 import http, { endpoints } from "@/services/api";
-import { useAuthContext } from "./useAuthContext";
-import { useMutation, UseMutationResult } from "@tanstack/react-query";
+
 import { STORAGE_KEY } from "../context/authProvider";
+
+import { useAuthContext } from "./useAuthContext";
 
 interface SignInEmailResponse {
   data: {

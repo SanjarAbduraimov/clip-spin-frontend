@@ -14,12 +14,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/_form/Form";
-import { OTPField } from "@/components/_rhf/OTP";
+import { Input } from "@/components/_form/Input";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card/Card";
 import { LoadingButton } from "@/components/LoadingButton/LoadingButton";
 import { AuthLayout } from "@/layout/Auth";
-import { Input } from "@/components/_form/Input";
 
 const emailOTPSchema = z.object({
   full_name: z.string(),

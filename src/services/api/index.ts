@@ -1,7 +1,10 @@
 /* eslint-disable no-param-reassign */
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { toast } from "sonner";
 
 import { config } from "@/constants/config";
+
+const TOASTABLE_METHODS = ["post", "put", "patch"];
 
 const http = axios.create({
   baseURL: config.apiBaseUrl,
@@ -27,6 +30,21 @@ http.interceptors.response.use(
   (error) => {
     if (error?.response?.status === 401) {
       // console.log("error");
+    }
+
+    if (
+      error instanceof AxiosError &&
+      TOASTABLE_METHODS.includes(error.config?.method?.toLowerCase() || "")
+    ) {
+      const message = error.response?.data.message;
+      switch (message) {
+        case "INVALID_OTP_CODE":
+          toast.error("Invalid OTP code");
+          break;
+        default:
+          toast.error(message.slice(0, 1).toUpperCase() + message.slice(1));
+          break;
+      }
     }
 
     throw error;

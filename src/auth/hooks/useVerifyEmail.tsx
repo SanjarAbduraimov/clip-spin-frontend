@@ -46,7 +46,6 @@ export const useVerifyEmail = (): UseMutationResult<
 
       navigate("/");
     },
-
     mutationFn: ({
       email,
       code,

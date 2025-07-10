@@ -1,1 +1,1 @@
-export { SignUpWithEmail } from "./LoginWithEmail;
+export { LoginWithEmail } from "./LoginWithEmail";

@@ -7,14 +7,14 @@ import { z } from "zod";
 import { useAuthSignInEmail } from "@/auth/hooks/useAuthSignInEmail";
 import { Form } from "@/components/_form/Form";
 import { TextField } from "@/components/_rhf/Text";
+import { Button } from "@/components/Button";
 import { Card } from "@/components/Card/Card";
+import { Link } from "@/components/Link";
 import { LoadingButton } from "@/components/LoadingButton/LoadingButton";
 import { AuthLayout } from "@/layout/Auth";
 import { AuthWithGoogle } from "@/pages/Auth/AuthGoogle/AuthWithGoogle";
 
 import { EmailOtp } from "../../AuthOtp/EmailOtp";
-import { Button } from "@/components/Button";
-import { Link } from "@/components/Link";
 
 const signInSchema = z.object({
   email: z.string().email(),
@@ -66,7 +66,6 @@ export const SignInWithEmail = () => {
           </Card>
           <div className="flex flex-col items-center gap-3">
             <h1 className="text-center text-heading-5">{t("title")}</h1>
-            <p className="text-center text-md text-gray">{t("description")}</p>
           </div>
         </div>
         <Form {...form}>

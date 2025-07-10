@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 
+import { useLoginWithEmail } from "@/auth/hooks/useAuthLoginEmail";
 import { Form } from "@/components/_form/Form";
 import { PasswordField } from "@/components/_rhf/Password";
 import { TextField } from "@/components/_rhf/Text";
@@ -12,7 +13,6 @@ import { Card } from "@/components/Card/Card";
 import { LoadingButton } from "@/components/LoadingButton/LoadingButton";
 import { AuthLayout } from "@/layout/Auth";
 import { AuthWithGoogle } from "@/pages/Auth/AuthGoogle/AuthWithGoogle";
-import { useLoginWithEmail } from "@/auth/hooks/useAuthLoginEmail";
 
 const signUpSchema = z.object({
   email: z.string().email(),
@@ -40,7 +40,7 @@ export const LoginWithEmail = () => {
 
   return (
     <AuthLayout>
-      <div className="z-10 mt-24 flex w-full flex-col items-center gap-8">
+      <div className="z-10 mx-auto flex w-full flex-col items-center justify-center p-4">
         <div className="flex flex-col items-center gap-6">
           <Card className="h-12 w-12 bg-white shadow-lg">
             <img src="/logo.png" alt="logo" />

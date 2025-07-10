@@ -53,9 +53,6 @@ export const SignUpWithEmail = () => {
           </Card>
           <div className="flex flex-col items-center gap-3">
             <h1 className="text-heading-5">{t("title")}</h1>
-            <p className="w-[380px] text-center text-md text-gray">
-              {t("description")}
-            </p>
           </div>
         </div>
         <Form {...form}>

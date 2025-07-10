@@ -9,5 +9,6 @@
   "signInButtonTitle": "Login",
   "googleButtonTitle": "Sign in with Google",
   "footerTitle": "Don't have an account?",
-  "urlTitle": "Sign up"
+  "urlTitle": "Sign up",
+  "passwordRequirement": "Password must be at least 6 characters long"
 }
