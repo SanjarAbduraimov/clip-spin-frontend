@@ -74,5 +74,9 @@ export const endpoints = {
     logout: "/auth/logout",
     // refresh-token
     refresh: "/auth/refresh",
+    // forget-password
+    forget_password: "/auth/forgot-password",
+    // reset-password
+    reset_password: "/auth/reset-password",
   },
 };

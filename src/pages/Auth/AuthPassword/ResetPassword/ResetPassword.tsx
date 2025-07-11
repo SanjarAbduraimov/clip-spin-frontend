@@ -2,9 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 
+import { useResetPassword } from "@/auth/hooks/useAuthResetPassword";
 import { Form } from "@/components/_form/Form";
 import { PasswordField } from "@/components/_rhf/Password";
 import { Button } from "@/components/Button";
@@ -27,6 +28,9 @@ type ResetPasswordFormSchema = z.infer<typeof resetPasswordSchema>;
 export const ResetPassword = () => {
   const { t } = useTranslation("reset-password");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token") || "";
+  const resetPasswordMutation = useResetPassword();
 
   const form = useForm<ResetPasswordFormSchema>({
     resolver: zodResolver(resetPasswordSchema),
@@ -37,9 +41,10 @@ export const ResetPassword = () => {
   });
 
   const handleSubmit = (formData: ResetPasswordFormSchema) => {
-    navigate("/");
-
-    return formData;
+    resetPasswordMutation.mutate({
+      token,
+      password: formData.password,
+    });
   };
 
   return (
@@ -77,7 +82,7 @@ export const ResetPassword = () => {
             />
             <LoadingButton
               type="submit"
-              isLoading={false}
+              isLoading={resetPasswordMutation.isPending}
               variant="primary"
               size="lg"
               className="w-full text-md"
@@ -90,7 +95,7 @@ export const ResetPassword = () => {
           variant="link"
           size="link"
           iconLeft={<ArrowLeft size={20} />}
-          onClick={() => navigate("/auth/sign-in")}
+          onClick={() => navigate("/auth/login")}
         >
           {t("footerTitle")}
         </Button>

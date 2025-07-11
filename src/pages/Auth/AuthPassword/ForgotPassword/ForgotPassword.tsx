@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
+import { useForgetPassword } from "@/auth/hooks/useAuthForgetPassword";
 import { Form } from "@/components/_form/Form";
 import { TextField } from "@/components/_rhf/Text";
 import { Button } from "@/components/Button";
@@ -21,6 +22,7 @@ type ForgotPasswordFormSchema = z.infer<typeof forgotPasswordSchema>;
 export const ForgotPassword = () => {
   const { t } = useTranslation("forgot-password");
   const navigate = useNavigate();
+  const forgetPasswordMutation = useForgetPassword();
 
   const form = useForm<ForgotPasswordFormSchema>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -30,7 +32,15 @@ export const ForgotPassword = () => {
   });
 
   const handleSubmit = async (formData: ForgotPasswordFormSchema) => {
-    navigate(`/auth/otp?email=${formData.email}`);
+    forgetPasswordMutation.mutate(
+      { email: formData.email },
+      {
+        onSuccess: () => {
+          // Navigate to email sent confirmation page
+          navigate(`/auth/reset-email-sent?email=${encodeURIComponent(formData.email)}`);
+        },
+      }
+    );
   };
 
   return (
@@ -59,7 +69,7 @@ export const ForgotPassword = () => {
             />
             <LoadingButton
               type="submit"
-              isLoading={false}
+              isLoading={forgetPasswordMutation.isPending}
               variant="primary"
               size="lg"
               className="w-full text-md"

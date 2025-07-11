@@ -64,12 +64,19 @@ export const LoginWithEmail = () => {
                   label={t("emailLabel")}
                   placeholder={t("emailPlaceholder")}
                 />
-                <PasswordField
-                  name="password"
-                  label={t("passwordLabel")}
-                  helperText={t("passwordRequirement")}
-                  placeholder={t("passwordPlaceholder")}
-                />
+                <div className="flex w-full flex-col gap-1">
+                  <PasswordField
+                    name="password"
+                    label={t("passwordLabel")}
+                    helperText={t("passwordRequirement")}
+                    placeholder={t("passwordPlaceholder")}
+                  />
+                  <div className="flex justify-end">
+                    <Button variant="primary-link" size="link" asChild>
+                      <Link to="/auth/forgot-password">Forgot password?</Link>
+                    </Button>
+                  </div>
+                </div>
               </div>
               <div className="flex w-full flex-col items-center gap-3">
                 <LoadingButton
