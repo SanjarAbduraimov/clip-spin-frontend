@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -38,6 +39,8 @@ interface EmailOtpProps {
 export const EmailOtp = ({ codeHash, email }: EmailOtpProps) => {
   const { t } = useTranslation("email-verification");
 
+  const [checked, setChecked] = useState(false);
+
   const { mutateAsync, isPending } = useVerifyEmail();
 
   const navigate = useNavigate();
@@ -46,6 +49,9 @@ export const EmailOtp = ({ codeHash, email }: EmailOtpProps) => {
     defaultValues: {},
   });
   const handleSubmit = async (values: EmailOTPFormSchema) => {
+    if (!checked) {
+      return null;
+    }
     try {
       await mutateAsync({
         ...values,
@@ -156,7 +162,10 @@ export const EmailOtp = ({ codeHash, email }: EmailOtpProps) => {
               />
 
               <div className="flex items-center gap-2">
-                <Checkbox />
+                <Checkbox
+                  checked={checked}
+                  onChange={() => setChecked(!checked)}
+                />
                 <FormLabel>
                   I agree to the{" "}
                   <Link to="/terms-of-service">terms of usage</Link>
