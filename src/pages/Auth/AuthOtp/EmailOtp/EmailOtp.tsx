@@ -164,7 +164,7 @@ export const EmailOtp = ({ codeHash, email }: EmailOtpProps) => {
               <div className="flex items-center gap-2">
                 <Checkbox
                   checked={checked}
-                  onChange={() => setChecked(!checked)}
+                  onCheckedChange={() => setChecked(!checked)}
                 />
                 <FormLabel>
                   I agree to the{" "}
