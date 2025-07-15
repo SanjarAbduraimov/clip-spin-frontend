@@ -30,14 +30,20 @@ export const useProjects = () => {
     queryKey: ["projects"],
     queryFn: getProjects,
     enabled: authenticated,
-    select: (data) => data.map(projectResponseToProject),
+    select: (data) =>
+      data
+        .map(projectResponseToProject)
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        ),
   });
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (!authenticated) return;
       res.refetch();
-    }, 100000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [authenticated]);
@@ -52,7 +58,13 @@ export const useProjectsRequests = () => {
     queryKey: ["projects-requests"],
     queryFn: getProjectsRequests,
     enabled: authenticated,
-    select: (data) => data.map(projectResponseToProject),
+    select: (data) =>
+      data
+        .map(projectResponseToProject)
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        ),
   });
 
   useEffect(() => {
@@ -110,8 +122,6 @@ export const useProject = (id: string) => {
 export const useCreateProjectFromUrl = () => {
   const queryClient = useQueryClient();
 
-  const navigate = useNavigate();
-
   return useMutation({
     mutationFn: ({
       name,
@@ -122,8 +132,7 @@ export const useCreateProjectFromUrl = () => {
       url: string;
       type: ProjectType;
     }) => createProjectFromUrl(name, url, type),
-    onSuccess: (data) => {
-      navigate(`/project/${data._id}`);
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });

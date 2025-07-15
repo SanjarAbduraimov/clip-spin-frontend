@@ -8,11 +8,12 @@ import {
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { errorMessages } from "@/modules/project/constants";
 import { getProjectStatusLabel } from "@/modules/project/libs/getProjectStatusLabel";
 
 import { useAuthContext } from "@/auth/hooks/useAuthContext";
 import { AuthUserType, Roles } from "@/auth/types";
-import { Alert, AlertTitle } from "@/components/Alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/Alert";
 import { Badge } from "@/components/Badge";
 import { Button, IconButton } from "@/components/Button";
 import { Card, CardContent, CardFooter } from "@/components/Card";
@@ -199,101 +200,112 @@ const ProjectDetail = () => {
 
           <Workflow project={project} />
 
-          <div className="mt-8 flex flex-col gap-8 md:flex-row">
-            <div className="shrink-0">
-              <div className="mb-6">
-                <h3 className="mb-4 text-xl font-semibold">
-                  {project.outputUrl ? "Generated Video" : "Original Video"}
-                </h3>
-                <div>
-                  <div className="mx-auto max-w-[400px] overflow-hidden rounded-lg bg-black">
-                    <div className="aspect-[9/16] overflow-hidden">
-                      {project.sourceType === "youtube" &&
-                      !project.outputUrl ? (
-                        <iframe
-                          src={project.source?.replace("shorts", "embed")}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          title="YouTube video player"
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <video
-                          src={getVideoUrl(project)}
-                          controls
-                          autoPlay
-                          className="h-full w-full object-cover"
-                        >
-                          <track kind="captions" src="" label="English" />
-                        </video>
-                      )}
+          {project.status === ProjectStatus.FAILED && (
+            <Alert className="mt-8" variant="destructive">
+              <AlertTitle>Video not generated</AlertTitle>
+              <AlertDescription>
+                {errorMessages[project.errorCause]}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {project.status !== ProjectStatus.FAILED && (
+            <div className="mt-8 flex flex-col gap-8 md:flex-row">
+              <div className="shrink-0">
+                <div className="mb-6">
+                  <h3 className="mb-4 text-xl font-semibold">
+                    {project.outputUrl ? "Generated Video" : "Original Video"}
+                  </h3>
+                  <div>
+                    <div className="mx-auto max-w-[400px] overflow-hidden rounded-lg bg-black">
+                      <div className="aspect-[9/16] overflow-hidden">
+                        {project.sourceType === "youtube" &&
+                        !project.outputUrl ? (
+                          <iframe
+                            src={project.source?.replace("shorts", "embed")}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            title="YouTube video player"
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <video
+                            src={getVideoUrl(project)}
+                            controls
+                            autoPlay
+                            className="h-full w-full object-cover"
+                          >
+                            <track kind="captions" src="" label="English" />
+                          </video>
+                        )}
+                      </div>
                     </div>
                   </div>
+                  {project.status === ProjectStatus.COMPLETED && (
+                    <CardFooter className="mt-4 grid grid-cols-3 gap-2">
+                      <Button variant="outline" asChild>
+                        <a
+                          href={project.sourceUrl}
+                          download
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <EyeIcon size={16} className="mr-2" />
+                          Original
+                        </a>
+                      </Button>
+                      <Button variant="outline" asChild>
+                        <a
+                          href={project.outputUrl}
+                          download
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <Download size={16} className="mr-2" />
+                          Download
+                        </a>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => shareProject(project)}
+                      >
+                        <Share2 size={16} className="mr-2" />
+                        Share
+                      </Button>
+                    </CardFooter>
+                  )}
                 </div>
-                {project.status === ProjectStatus.COMPLETED && (
-                  <CardFooter className="mt-4 grid grid-cols-3 gap-2">
-                    <Button variant="outline" asChild>
-                      <a
-                        href={project.sourceUrl}
-                        download
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <EyeIcon size={16} className="mr-2" />
-                        Original
-                      </a>
-                    </Button>
-                    <Button variant="outline" asChild>
-                      <a
-                        href={project.outputUrl}
-                        download
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <Download size={16} className="mr-2" />
-                        Download
-                      </a>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => shareProject(project)}
-                    >
-                      <Share2 size={16} className="mr-2" />
-                      Share
-                    </Button>
-                  </CardFooter>
+              </div>
+
+              <div className="grow">
+                {checkEditTranscriptionButtonVisibility(project) ? (
+                  <SelectScript project={project} />
+                ) : (
+                  project.selectedIdea && (
+                    <Alert className="mt-4 bg-bg-quaternary">
+                      <div className="mb-2 flex items-baseline justify-between">
+                        <AlertTitle className="text-lg">Script</AlertTitle>
+                      </div>
+                      {project.selectedIdea}
+                      {checkUploadButtonVisibility(project, user) && (
+                        <UploadVideoDialog
+                          project={project}
+                          button={
+                            <Button
+                              className="ml-auto mt-2 block"
+                              variant="outline"
+                            >
+                              Upload Video
+                            </Button>
+                          }
+                        />
+                      )}
+                    </Alert>
+                  )
                 )}
               </div>
             </div>
-
-            <div className="grow">
-              {checkEditTranscriptionButtonVisibility(project) ? (
-                <SelectScript project={project} />
-              ) : (
-                project.selectedIdea && (
-                  <Alert className="mt-4 bg-bg-quaternary">
-                    <div className="mb-2 flex items-baseline justify-between">
-                      <AlertTitle className="text-lg">Script</AlertTitle>
-                    </div>
-                    {project.selectedIdea}
-                    {checkUploadButtonVisibility(project, user) && (
-                      <UploadVideoDialog
-                        project={project}
-                        button={
-                          <Button
-                            className="ml-auto mt-2 block"
-                            variant="outline"
-                          >
-                            Upload Video
-                          </Button>
-                        }
-                      />
-                    )}
-                  </Alert>
-                )
-              )}
-            </div>
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>

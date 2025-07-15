@@ -133,7 +133,8 @@ const NewProject = ({ projectType }: NewProjectProps) => {
 
       toast({
         title: "Project created",
-        description: "Your project has been created and is being processed",
+        description:
+          "Your project has been created and is being processed. You can check the progress in the recent projects section below.",
       });
     } catch (error) {
       toast({

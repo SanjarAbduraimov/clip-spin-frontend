@@ -82,10 +82,24 @@ export enum ProjectProgress {
 //   "status": "queued"
 // }
 
+export enum ProjectErrorCause {
+  INVALID_URL = "invalid_url",
+  UNSUPPORTED_URL = "unsupported_url",
+  FAILED_TO_DOWNLOAD = "failed_to_download",
+  FAILED_TO_SAVE = "failed_to_save",
+  FAILED_TO_PARSE = "failed_to_parse",
+  FAILED_TO_ANALYZE = "failed_to_analyze",
+  FAILED_TO_GENERATE_VIDEO = "failed_to_generate_video",
+  FAILED_TO_GENERATE_SCENES = "failed_to_generate_scenes",
+  FAILED_TO_GENERATE_SCRIPTS = "failed_to_generate_scripts",
+  UNKNOWN_ERROR = "unknown_error",
+}
+
 export interface ProjectResponse {
   data: {
     _id: string;
     title: string;
+    created_at: string;
     input: {
       url: string;
       source?: VideoSource;
@@ -96,6 +110,7 @@ export interface ProjectResponse {
     progress: ProjectProgress;
     type: ProjectType;
     file_key: string;
+    error_cause?: ProjectErrorCause;
     selected_idea?: {
       script: string;
     };
@@ -146,6 +161,7 @@ export interface Project {
     presenterId: string;
   };
   outputUrl?: string;
+  errorCause: ProjectErrorCause;
 }
 
 export interface ProjectUpdateBody {
@@ -228,7 +244,7 @@ export function projectResponseToProject(
     id: projectResponse._id,
     name: projectResponse.title,
     status: projectResponse.status,
-    createdAt: new Date().toISOString(),
+    createdAt: projectResponse.created_at,
     selectedIdea: projectResponse.selected_idea?.script,
     suggestedIdeas: projectResponse.suggested_ideas.map((idea) => idea.script),
     progress: projectResponse.progress,
@@ -242,6 +258,7 @@ export function projectResponseToProject(
     generatedDuration: undefined,
     outputSettings: undefined,
     presenterSettings: undefined,
+    errorCause: projectResponse.error_cause || ProjectErrorCause.UNKNOWN_ERROR,
     outputUrl: projectResponse.output?.file_key
       ? `${config.apiBaseUrl}/files/${projectResponse.output.file_key}`
       : undefined,
