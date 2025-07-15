@@ -81,7 +81,7 @@ const NewProject = ({ projectType }: NewProjectProps) => {
 
   const [open, setOpen] = useState(false);
 
-  const { authenticated, user } = useAuthContext();
+  const { authenticated, user, invalidateUserSubscription } = useAuthContext();
 
   const createProjectMutation = useCreateProjectFromUrl();
 
@@ -126,6 +126,8 @@ const NewProject = ({ projectType }: NewProjectProps) => {
         url,
         type,
       });
+
+      await invalidateUserSubscription();
 
       form.reset();
 

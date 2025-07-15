@@ -119,6 +119,34 @@ export function AuthProvider({ children }: Props) {
     initialize();
   }, [initialize]);
 
+  const invalidateUserSubscription = useCallback(async () => {
+    if (!state.user) return;
+    try {
+      const { data: subscription } = await http
+        .get<{
+          data: AuthSubscriptionType;
+        }>(endpoints.auth.subscriptions)
+        .then((res) => res.data);
+
+      dispatch({
+        type: Types.INITIAL,
+        payload: {
+          user: {
+            ...state.user,
+            subscription: subscription && {
+              ...subscription,
+              total_credits:
+                subscription.monthly_credits.remaining +
+                subscription.purchased_credits.remaining,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }, [state.user]);
+
   const logout = useCallback(async () => {
     setSession(null);
     dispatch({
@@ -139,6 +167,7 @@ export function AuthProvider({ children }: Props) {
       unauthenticated: status === "unauthenticated",
       logout,
       dispatch,
+      invalidateUserSubscription,
     }),
     [logout, state.user, status, dispatch],
   );

@@ -95,6 +95,7 @@ export interface JWTContextType {
   unauthenticated: boolean;
   logout: () => Promise<void>;
   dispatch: Dispatch<any>;
+  invalidateUserSubscription: () => Promise<void>;
 }
 
 export enum Types {
