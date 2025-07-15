@@ -37,9 +37,11 @@ export const ForgotPassword = () => {
       {
         onSuccess: () => {
           // Navigate to email sent confirmation page
-          navigate(`/auth/reset-email-sent?email=${encodeURIComponent(formData.email)}`);
+          navigate(
+            `/auth/reset-email-sent?email=${encodeURIComponent(formData.email)}`,
+          );
         },
-      }
+      },
     );
   };
 
@@ -82,7 +84,7 @@ export const ForgotPassword = () => {
           variant="link"
           size="link"
           iconLeft={<ArrowLeft size={20} />}
-          onClick={() => navigate("/auth/login")}
+          onClick={() => navigate("/auth/sign-in")}
         >
           {t("footerTitle")}
         </Button>

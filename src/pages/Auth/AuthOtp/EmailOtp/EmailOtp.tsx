@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { useVerifyEmail } from "@/auth/hooks/useVerifyEmail";
+import { Checkbox } from "@/components/_form/Calendar/CheckBox";
 import {
   Form,
   FormControl,
@@ -17,6 +18,7 @@ import {
 import { Input } from "@/components/_form/Input";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card/Card";
+import { Link } from "@/components/Link";
 import { LoadingButton } from "@/components/LoadingButton/LoadingButton";
 import { AuthLayout } from "@/layout/Auth";
 
@@ -152,6 +154,14 @@ export const EmailOtp = ({ codeHash, email }: EmailOtpProps) => {
                   </FormItem>
                 )}
               />
+
+              <div className="flex items-center gap-2">
+                <Checkbox />
+                <FormLabel>
+                  I agree to the{" "}
+                  <Link to="/terms-of-service">terms of usage</Link>
+                </FormLabel>
+              </div>
             </div>
 
             <LoadingButton
@@ -169,7 +179,7 @@ export const EmailOtp = ({ codeHash, email }: EmailOtpProps) => {
           variant="link"
           size="link"
           iconLeft={<ArrowLeft size={20} />}
-          onClick={() => navigate("/auth/login")}
+          onClick={() => navigate("/auth/sign-in")}
         >
           {t("footerTitle")}
         </Button>

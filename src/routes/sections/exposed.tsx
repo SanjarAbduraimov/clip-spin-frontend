@@ -1,3 +1,10 @@
 import { RouteObject } from "react-router-dom";
 
-export const exposed: RouteObject[] = [];
+import TermsOfService from "@/pages/TermsOfService";
+
+export const exposed: RouteObject[] = [
+  {
+    path: "/terms-of-service",
+    element: <TermsOfService />,
+  },
+];

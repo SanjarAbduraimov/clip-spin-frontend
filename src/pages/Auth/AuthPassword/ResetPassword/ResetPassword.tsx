@@ -95,7 +95,7 @@ export const ResetPassword = () => {
           variant="link"
           size="link"
           iconLeft={<ArrowLeft size={20} />}
-          onClick={() => navigate("/auth/login")}
+          onClick={() => navigate("/auth/sign-in")}
         >
           {t("footerTitle")}
         </Button>

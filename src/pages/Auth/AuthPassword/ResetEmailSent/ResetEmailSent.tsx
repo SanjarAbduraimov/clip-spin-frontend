@@ -23,22 +23,21 @@ export const ResetEmailSent = () => {
               <p className="text-center text-md text-gray">
                 We've sent a password reset link to
               </p>
-              <p className="text-center text-md font-semibold">
-                {email}
-              </p>
+              <p className="text-center text-md font-semibold">{email}</p>
               <p className="mt-4 text-center text-md text-gray">
                 Click the link in the email to reset your password.
               </p>
             </div>
           </div>
         </div>
-        
+
         <div className="flex flex-col items-center gap-4">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <Mail size={32} className="text-primary" />
           </div>
           <p className="text-center text-sm text-gray">
-            If you don't see the email, check other places it might be, like your junk, spam, social, or other folders.
+            If you don't see the email, check other places it might be, like
+            your junk, spam, social, or other folders.
           </p>
         </div>
 
@@ -46,7 +45,7 @@ export const ResetEmailSent = () => {
           variant="link"
           size="link"
           iconLeft={<ArrowLeft size={20} />}
-          onClick={() => navigate("/auth/login")}
+          onClick={() => navigate("/auth/sign-in")}
         >
           Back to login
         </Button>

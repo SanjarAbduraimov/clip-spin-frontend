@@ -98,7 +98,7 @@ export const LoginWithEmail = () => {
         <div className="flex flex-row items-center gap-1">
           <p className="text-center text-sm text-gray">{t("footerTitle")} </p>
           <Button variant="primary-link" size="link" asChild>
-            <Link to="/auth/sign-in">{t("urlTitle")}</Link>
+            <Link to="/auth/register">{t("urlTitle")}</Link>
           </Button>
         </div>
       </div>
