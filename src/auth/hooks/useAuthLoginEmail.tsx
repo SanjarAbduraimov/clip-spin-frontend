@@ -2,7 +2,7 @@ import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import { Types } from "@/auth/types";
+import { AuthSubscriptionType, AuthUserType, Types } from "@/auth/types";
 import http, { endpoints } from "@/services/api";
 
 import { STORAGE_KEY } from "../context/authProvider";
@@ -29,14 +29,31 @@ export const useLoginWithEmail = (): UseMutationResult<
   const { dispatch } = useAuthContext();
 
   return useMutation({
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       localStorage.setItem(STORAGE_KEY, res.data.access_token);
+
+      const { data } = await http.get<{
+        data: AuthUserType;
+      }>(endpoints.auth.me);
+
+      const { data: subscription } = await http
+        .get<{
+          data: AuthSubscriptionType;
+        }>(endpoints.auth.subscriptions)
+        .then((subscriptionRes) => subscriptionRes.data);
 
       dispatch({
         type: Types.INITIAL,
         payload: {
           user: {
             accessToken: res.data.access_token,
+            ...data,
+            subscription: subscription && {
+              ...subscription,
+              total_credits:
+                subscription.monthly_credits.remaining +
+                subscription.purchased_credits.remaining,
+            },
           },
         },
       });
