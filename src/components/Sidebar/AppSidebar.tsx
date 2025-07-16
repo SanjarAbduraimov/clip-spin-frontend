@@ -44,9 +44,14 @@ const data = {
       url: "#",
       icon: CheckDoneIcon,
     },
+    {
+      title: "Foydalanuvchilar",
+      url: "/users",
+      icon: CheckDoneIcon,
+      adminOnly: true,
+    },
   ],
 };
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { setOpen, open } = useSidebar();
   return (

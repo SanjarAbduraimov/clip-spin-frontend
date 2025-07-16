@@ -9,9 +9,14 @@ export const Navigation = () => {
     <nav>
       <ul className="flex gap-4">
         {user?.role === "admin" && (
-          <li>
-            <Link to="/requests">Requests</Link>
-          </li>
+          <>
+            <li>
+              <Link to="/requests">Requests</Link>
+            </li>
+            <li>
+              <Link to="/users">Users</Link>
+            </li>
+          </>
         )}
         {!user?.subscription && (
           <li>

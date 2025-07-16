@@ -4,6 +4,8 @@ import { RouteObject } from "react-router-dom";
 import { PaymentCancel } from "@/modules/subscription/ui/PaymentCancel";
 import { PaymentError } from "@/modules/subscription/ui/PaymentError";
 import { PaymentSuccess } from "@/modules/subscription/ui/PaymentSuccess";
+import { AdminGuard } from "@/auth/guard/adminGuard";
+import Users from "@/pages/Protected/Users";
 
 import { Pricing, Usage } from "@/pages/dashboard";
 import { ProjectType } from "@/types";
@@ -55,6 +57,14 @@ export const dashboard: RouteObject[] = [
       {
         path: "usage",
         element: <Usage />,
+      },
+      {
+        path: "users",
+        element: (
+          <AdminGuard>
+            <Users />
+          </AdminGuard>
+        ),
       },
     ],
   },
