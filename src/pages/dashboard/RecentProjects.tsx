@@ -16,7 +16,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/DropdownMenu";
-import { Skeleton } from "@/components/Skeleton";
 import DataTable from "@/components/Table/DataTable";
 import {
   useDeleteProject,
@@ -135,7 +134,7 @@ export const RecentProjects = () => {
   const projects = data?.data || [];
   const totalProjects = data?.total || 0;
 
-  const shareProject = useShareProject();
+  const { shareProject } = useShareProject();
 
   const deleteProjectMutation = useDeleteProject();
   const duplicateProjectMutation = useDuplicateProject();

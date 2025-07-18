@@ -5,12 +5,12 @@ import { useProjects } from "@/hooks/api";
 export const Statistics = () => {
   const { data: projects, isLoading } = useProjects();
 
-  if (!projects?.length) return null;
+  if (!projects?.data.length) return null;
 
   const completedProjects =
-    projects?.filter((p) => p.status === "completed").length || 0;
+    projects?.data.filter((p) => p.status === "completed").length || 0;
   const processingProjects =
-    projects?.filter((p) => p.status === "in_progress").length || 0;
+    projects?.data.filter((p) => p.status === "in_progress").length || 0;
 
   return (
     <div className="mb-8 grid gap-4 md:grid-cols-3">
@@ -23,7 +23,7 @@ export const Statistics = () => {
             {isLoading ? (
               <Skeleton className="h-8 w-20" />
             ) : (
-              projects?.length || 0
+              projects?.data.length || 0
             )}
           </div>
         </CardContent>
