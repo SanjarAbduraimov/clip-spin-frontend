@@ -23,20 +23,28 @@ import {
   ProjectUpdateBody,
 } from "@/types";
 
-export const useProjects = () => {
+export const useProjects = (page?: number, limit?: number) => {
   const { authenticated } = useAuthContext();
 
   const res = useQuery({
-    queryKey: ["projects"],
-    queryFn: getProjects,
+    queryKey: ["projects", page, limit],
+    queryFn: () => getProjects(page, limit),
     enabled: authenticated,
-    select: (data) =>
-      data
-        .map(projectResponseToProject)
+    select: (data) => {
+      const projects = data.data
+        ?.map(projectResponseToProject)
         .sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        ),
+        );
+
+      return {
+        data: projects || [],
+        total: data.total || 0,
+        page: data.page || 1,
+        limit: data.limit || 10,
+      };
+    },
   });
 
   useEffect(() => {

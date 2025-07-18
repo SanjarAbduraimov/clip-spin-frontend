@@ -10,10 +10,19 @@ import {
 import axiosInstance from "./axios";
 
 // Get all projects for the current user
-export const getProjects = async () => {
+export const getProjects = async (page?: number, limit?: number) => {
+  const params = new URLSearchParams();
+  if (page) params.append("page", page.toString());
+  if (limit) params.append("limit", limit.toString());
+
   return axiosInstance
-    .get<{ data: ProjectResponse["data"][] }>("/projects")
-    .then((res) => res.data.data);
+    .get<{
+      data: ProjectResponse["data"][];
+      total: number;
+      page: number;
+      limit: number;
+    }>(`/projects${params.toString() ? `?${params.toString()}` : ""}`)
+    .then((res) => res.data);
 };
 
 export const getProjectsRequests = async () => {

@@ -1,6 +1,7 @@
 import { Copy, Download, Filter, Search, Share2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { ColumnDef } from "@tanstack/react-table";
 
 import { getProjectStatusLabel } from "@/modules/project/libs/getProjectStatusLabel";
 
@@ -16,14 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/DropdownMenu";
 import { Skeleton } from "@/components/Skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/Table/Table";
+import DataTable from "@/components/Table/DataTable";
 import {
   useDeleteProject,
   useDuplicateProject,
@@ -38,14 +32,110 @@ import {
 } from "@/types";
 
 export const RecentProjects = () => {
+  const columns: ColumnDef<Project>[] = [
+    {
+      accessorKey: "name",
+      header: "Project Name",
+      cell: ({ row }) => {
+        const project = row.original;
+        return (
+          <Link
+            to={`/project/${project.id}`}
+            className="font-medium hover:underline"
+          >
+            {project.name}
+          </Link>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const project = row.original;
+        return (
+          <Badge
+            className="whitespace-nowrap"
+            variant={ProjectStatusColors[project.status]}
+          >
+            {getProjectStatusLabel(project)}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "type",
+      header: "Project Type",
+      cell: ({ row }) => {
+        const project = row.original;
+        return (
+          <Badge className="whitespace-nowrap">
+            {ProjectTypeLabels[project.type]}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: () => <div className="text-right">Actions</div>,
+      cell: ({ row }) => {
+        const project = row.original;
+        return (
+          <div className="flex justify-end gap-2">
+            {project.status === ProjectStatus.COMPLETED && (
+              <>
+                <IconButton asChild variant="ghost">
+                  <a
+                    href={project.sourceUrl}
+                    download
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Download size={16} />
+                  </a>
+                </IconButton>
+                <IconButton
+                  onClick={() => shareProject(project)}
+                  variant="ghost"
+                >
+                  <Share2 size={16} />
+                </IconButton>
+              </>
+            )}
+            <IconButton
+              variant="ghost"
+              onClick={() => handleDuplicateProject(project)}
+            >
+              <Copy size={16} />
+            </IconButton>
+            <IconButton
+              variant="ghost"
+              className="text-red-500"
+              onClick={() => handleDeleteProject(project.id)}
+            >
+              <Trash2 size={16} />
+            </IconButton>
+          </div>
+        );
+      },
+    },
+  ];
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | "all">(
     "all",
   );
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [pagination, setPagination] = useState({
+    pageIndex: page - 1,
+    pageSize: limit,
+  });
 
-  const { data: projects, isLoading, error } = useProjects();
+  const { data, isLoading, error } = useProjects(page, limit);
+  const projects = data?.data || [];
+  const totalProjects = data?.total || 0;
 
-  const { shareProject } = useShareProject();
+  const shareProject = useShareProject();
 
   const deleteProjectMutation = useDeleteProject();
   const duplicateProjectMutation = useDuplicateProject();
@@ -140,113 +230,35 @@ export const RecentProjects = () => {
         </div>
       </CardHeader>
       <CardContent>
-        {(() => {
-          // Use a function to determine what content to render based on conditions
-          if (isLoading) {
-            return (
-              <div className="space-y-4">
-                {Array.from({ length: 5 }).map(() => (
-                  <div
-                    key={`skeleton-item-${Math.random().toString(36).substr(2, 9)}`}
-                    className="flex items-center space-x-4"
-                  >
-                    <Skeleton className="h-12 w-full" />
-                  </div>
-                ))}
-              </div>
-            );
-          }
-          if (error) {
-            return (
-              <div className="py-8 text-center text-error">
-                Error loading projects. Please try again.
-              </div>
-            );
-          }
-          if (filteredProjects?.length === 0) {
-            return (
+        {error ? (
+          <div className="py-8 text-center text-error">
+            Error loading projects. Please try again.
+          </div>
+        ) : filteredProjects?.length === 0 && !isLoading ? (
+          <div className="py-8 text-center text-gray-500">
+            No projects found. Create a new project to get started.
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={filteredProjects || []}
+            rowCount={totalProjects}
+            pagination={pagination}
+            onPaginationChange={(updater) => {
+              const newPagination =
+                typeof updater === "function" ? updater(pagination) : updater;
+              setPagination(newPagination);
+              setPage(newPagination.pageIndex + 1);
+              setLimit(newPagination.pageSize);
+            }}
+            isLoading={isLoading}
+            emptyState={
               <div className="py-8 text-center text-gray-500">
                 No projects found. Create a new project to get started.
               </div>
-            );
-          }
-          return (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Project Name</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Project Type</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredProjects?.map((project) => (
-                  <TableRow key={project.id}>
-                    <TableCell className="font-medium">
-                      <Link
-                        to={`/project/${project.id}`}
-                        className="hover:underline"
-                      >
-                        {project.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        className="whitespace-nowrap"
-                        variant={ProjectStatusColors[project.status]}
-                      >
-                        {getProjectStatusLabel(project)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="whitespace-nowrap">
-                        {ProjectTypeLabels[project.type]}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        {project.status === ProjectStatus.COMPLETED && (
-                          <>
-                            <IconButton asChild variant="ghost">
-                              <a
-                                href={project.sourceUrl}
-                                download
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                <Download size={16} />
-                              </a>
-                            </IconButton>
-                            <IconButton
-                              onClick={() => shareProject(project)}
-                              variant="ghost"
-                            >
-                              <Share2 size={16} />
-                            </IconButton>
-                          </>
-                        )}
-                        <IconButton
-                          variant="ghost"
-                          onClick={() => handleDuplicateProject(project)}
-                        >
-                          <Copy size={16} />
-                        </IconButton>
-                        <IconButton
-                          variant="ghost"
-                          className="text-red-500"
-                          onClick={() => handleDeleteProject(project.id)}
-                        >
-                          <Trash2 size={16} />
-                        </IconButton>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          );
-        })()}
+            }
+          />
+        )}
       </CardContent>
     </Card>
   );
