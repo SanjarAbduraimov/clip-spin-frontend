@@ -12,7 +12,7 @@ export const ServicesList = ({
   };
 
   return (
-    <section>
+    <section id="services">
       <div className="flex items-baseline justify-between">
         <h2 className="mb-4 text-2xl font-bold">Services</h2>
         {/* <div>

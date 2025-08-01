@@ -1,6 +1,6 @@
 import { CreditCard, LogOut, Menu, Plus, X } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 import { PurchaseCredits } from "@/modules/subscription/ui/PurchaseCredits";
 
@@ -17,10 +17,19 @@ const Header = ({ className }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, logout } = useAuthContext();
 
+  const { hash } = useLocation();
+
   const handleSignOut = () => {
     logout();
     setMobileMenuOpen(false);
   };
+
+  useEffect(() => {
+    const hashElement = document.getElementById(hash.slice(1));
+    if (hashElement) {
+      hashElement.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [hash]);
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
@@ -32,9 +41,13 @@ const Header = ({ className }: HeaderProps) => {
         {/* Desktop Header */}
         <div className="flex items-center justify-between">
           <Link to="/" className="no-underline" onClick={closeMobileMenu}>
-            <h1 className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-xl font-bold text-transparent sm:text-2xl">
-              ClipSpin
-            </h1>
+            <img
+              className="block h-[39px] w-[100px]"
+              width={100}
+              height={39}
+              src="/clipspin-logo.png"
+              alt="ClipSpin"
+            />
           </Link>
 
           <div className="hidden items-center gap-4 md:flex">

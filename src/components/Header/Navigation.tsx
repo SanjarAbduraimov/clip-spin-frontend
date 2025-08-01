@@ -29,7 +29,7 @@ export const Navigation = () => {
           </li>
         )}
         <li>
-          <Link to="/">Services</Link>
+          <Link to="/#services">Services</Link>
         </li>
       </ul>
     </nav>
