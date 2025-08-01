@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
-import { CircleAlert } from "lucide-react";
-import { useEffect, useState } from "react";
+import { CircleAlert, CheckCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -80,6 +80,12 @@ const NewProject = ({ projectType }: NewProjectProps) => {
   const { toast } = useToast();
 
   const [open, setOpen] = useState(false);
+  const [projectCreated, setProjectCreated] = useState(false);
+  const [createdProjectData, setCreatedProjectData] = useState<{
+    name: string;
+    type: ProjectType;
+    id: string;
+  } | null>(null);
 
   const { authenticated, user, invalidateUserSubscription } = useAuthContext();
 
@@ -87,6 +93,8 @@ const NewProject = ({ projectType }: NewProjectProps) => {
 
   const { data: plans } = useSubscriptionPlans();
   const plan = plans?.[0];
+
+  const nameRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -119,15 +127,24 @@ const NewProject = ({ projectType }: NewProjectProps) => {
           type: values.type,
         });
         navigate(`/auth/sign-in?redirect=${videoCreationURL}`);
+        return;
       }
 
-      await createProjectMutation.mutateAsync({
+      const project = await createProjectMutation.mutateAsync({
         name,
         url,
         type,
       });
 
       await invalidateUserSubscription();
+
+      // Set success state
+      setProjectCreated(true);
+      setCreatedProjectData({
+        name,
+        type,
+        id: project._id,
+      });
 
       form.reset();
 
@@ -144,6 +161,17 @@ const NewProject = ({ projectType }: NewProjectProps) => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleSeeProgress = (id: string) => {
+    navigate(`/project/${id}`);
+  };
+
+  const handleCreateAnother = () => {
+    setProjectCreated(false);
+    setCreatedProjectData(null);
+    nameRef.current?.focus();
+    form.reset();
   };
 
   const handleUpgradeClick = () => {
@@ -211,7 +239,7 @@ const NewProject = ({ projectType }: NewProjectProps) => {
         </CardTitle>
         <CardDescription>Enter a video URL to be inspired from</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -221,7 +249,7 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                 <FormItem>
                   <FormLabel>Project Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="My Video" {...field} />
+                    <Input placeholder="My Video" {...field} ref={nameRef} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -598,6 +626,30 @@ const NewProject = ({ projectType }: NewProjectProps) => {
             </Button>
           </form>
         </Form>
+        {projectCreated && createdProjectData && (
+          <Alert className="border-green-200 bg-green-50">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <AlertTitle className="text-green-800">
+              Project Created Successfully!
+            </AlertTitle>
+            <AlertDescription className="text-green-700">
+              Your project &quot;{createdProjectData.name}&quot; has been
+              created and is being processed. You can check the progress in the
+              recent projects section below. Check your dashboard in 10 minutes.
+              <div className="mt-4 flex gap-3">
+                <Button
+                  onClick={() => handleSeeProgress(createdProjectData.id)}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  See the progress
+                </Button>
+                <Button onClick={handleCreateAnother} variant="outline">
+                  Create Another Project
+                </Button>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
       </CardContent>
 
       <PurchaseCredits open={open} onOpenChange={setOpen} />
