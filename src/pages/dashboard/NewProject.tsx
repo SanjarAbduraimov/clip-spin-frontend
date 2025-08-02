@@ -575,19 +575,31 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                           </div>
                           <div className="">
                             <h3 className="text-lg font-medium">
-                              Professional Editor
+                              Professional Editor{" "}
+                              <Tooltip>
+                                <TooltipTrigger type="button">
+                                  <QuestionMarkCircledIcon
+                                    width={16}
+                                    height={16}
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent className="w-[200px]">
+                                  Create a high-quality professional video
+                                  production{" "}
+                                  <a
+                                    href="https://api.app.clipspin.ai/api/files/professional-editor-example.mp4"
+                                    target="_blank"
+                                    className="text-primary"
+                                    rel="noreferrer"
+                                  >
+                                    Example
+                                  </a>
+                                </TooltipContent>
+                              </Tooltip>
                             </h3>
                             <p className="text-muted-foreground text-sm">
                               Create a high-quality professional video
                               production
-                              <a
-                                href="https://api.app.clipspin.ai/api/files/professional-editor-example.mp4"
-                                target="_blank"
-                                className="text-primary"
-                                rel="noreferrer"
-                              >
-                                Example
-                              </a>
                             </p>
                           </div>
                           <div
