@@ -10,7 +10,6 @@ import { Pricing, Usage } from "@/pages/dashboard";
 import Users from "@/pages/Protected/Users";
 import { ProjectType } from "@/types";
 
-// Clip Spin routes
 const ClipSpinLayout = lazy(() => import("@/layout/ClipSpinLayout"));
 const ClipSpinDashboard = lazy(() => import("@/pages/dashboard/Dashboard"));
 const NewProject = lazy(() => import("@/pages/dashboard/NewProject"));
