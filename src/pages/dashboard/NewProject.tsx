@@ -580,6 +580,14 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                             <p className="text-muted-foreground text-sm">
                               Create a high-quality professional video
                               production
+                              <a
+                                href="https://api.app.clipspin.ai/api/files/professional-editor-example.mp4"
+                                target="_blank"
+                                className="text-primary"
+                                rel="noreferrer"
+                              >
+                                Example
+                              </a>
                             </p>
                           </div>
                           <div
