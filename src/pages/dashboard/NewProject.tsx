@@ -1,12 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
-import { CircleAlert, CheckCircle } from "lucide-react";
+import { CircleAlert, CheckCircle, Play, Pause } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { projectSettingsService } from "@/modules/project/services/projectSettingsService";
+import { useGetVoices } from "@/modules/service/hooks/useGetVoices";
+import { VoiceDataMapper } from "@/modules/service/types/Service";
 import { useSubscriptionPlans } from "@/modules/subscription/hooks/useSubscription";
 import { PurchaseCredits } from "@/modules/subscription/ui/PurchaseCredits";
 
@@ -21,7 +23,8 @@ import {
 } from "@/components/_form/Form";
 import { Input } from "@/components/_form/Input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/Alert";
-import { Button } from "@/components/Button";
+import { Badge } from "@/components/Badge";
+import { Button, IconButton } from "@/components/Button";
 import {
   Card,
   CardContent,
@@ -36,6 +39,7 @@ import { ProjectType } from "@/types";
 
 const formSchema = z.object({
   name: z.string().min(1, "Project name is required"),
+  voice: z.string().optional(),
   url: z
     .string()
     .url("Please enter a valid URL")
@@ -76,8 +80,12 @@ interface NewProjectProps {
 }
 
 const NewProject = ({ projectType }: NewProjectProps) => {
+  const { data } = useGetVoices();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const [open, setOpen] = useState(false);
   const [projectCreated, setProjectCreated] = useState(false);
@@ -114,8 +122,41 @@ const NewProject = ({ projectType }: NewProjectProps) => {
   useEffect(() => {
     form.setValue("type", projectType);
   }, [projectType]);
+  const isHasVoiceType = form.watch("type");
+
+  const handlePlayPause = (voice: VoiceDataMapper) => {
+    if (playingId === voice._id) {
+      audioRef.current?.pause();
+      setPlayingId(null);
+    } else {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      const newAudio = new Audio(voice.preview_audio);
+      newAudio.play();
+      audioRef.current = newAudio;
+      setPlayingId(voice._id);
+
+      newAudio.onended = () => {
+        setPlayingId(null);
+      };
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isHasVoiceType !== ProjectType.talking_head) {
+      form.setValue("voice", undefined);
+    }
+  }, [isHasVoiceType, form.watch]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values);
     try {
       const { url, name } = values;
 
@@ -134,6 +175,7 @@ const NewProject = ({ projectType }: NewProjectProps) => {
         name,
         url,
         type,
+        voice: values.voice,
       });
 
       await invalidateUserSubscription();
@@ -613,6 +655,73 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                 </FormItem>
               )}
             />
+
+            {isHasVoiceType === ProjectType.talking_head && (
+              <FormField
+                control={form.control}
+                name="voice"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Voice Type</FormLabel>
+                    <FormControl>
+                      <div
+                        className="flex flex-col gap-4 overflow-auto sm:flex-row"
+                        role="radiogroup"
+                      >
+                        {data?.map((el: VoiceDataMapper) => (
+                          <div
+                            className="relative w-full md:min-w-[250px] md:max-w-[300px]"
+                            key={crypto.randomUUID()}
+                          >
+                            <input
+                              type="radio"
+                              id={el._id}
+                              className="peer sr-only"
+                              checked={field.value === el._id}
+                              onChange={() => field.onChange(el._id)}
+                              value={el._id}
+                            />
+                            <label
+                              htmlFor={el._id}
+                              className="flex cursor-pointer flex-col items-start rounded-lg border p-4 transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/5"
+                            >
+                              <div className="absolute right-2 top-6">
+                                <Badge
+                                  size="sm"
+                                  variant={
+                                    el.gender === "male" ? "primary" : "error"
+                                  }
+                                >
+                                  {el.gender.toUpperCase()}
+                                </Badge>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <IconButton
+                                  onClick={() => handlePlayPause(el)}
+                                  variant="primary-outline"
+                                >
+                                  {playingId === el._id ? <Pause /> : <Play />}
+                                </IconButton>
+                                <div className="">
+                                  <h3 className="flex items-center gap-1 text-lg font-medium">
+                                    {el.name}
+                                  </h3>
+                                </div>
+                              </div>
+
+                              <div
+                                className={`absolute right-2 top-2 h-4 w-4 rounded-full ${field.value === el._id ? "bg-primary" : "border-muted border"}`}
+                              />
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             {((user?.subscription &&
               plan?.prices[type] &&
               user.subscription?.total_credits < plan?.prices[type]) ||

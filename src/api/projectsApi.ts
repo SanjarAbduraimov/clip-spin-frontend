@@ -43,6 +43,7 @@ export const createProjectFromUrl = async (
   name: string,
   url: string,
   type: ProjectType,
+  voice?: string,
 ): Promise<ProjectCreateResponse["data"]> => {
   return axiosInstance
     .post<ProjectCreateResponse>(
@@ -51,6 +52,7 @@ export const createProjectFromUrl = async (
         name,
         url,
         type,
+        voice,
       }),
     )
     .then((res) => res.data.data);

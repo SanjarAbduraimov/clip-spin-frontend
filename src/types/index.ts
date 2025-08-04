@@ -126,12 +126,14 @@ export interface CreateProjectReq {
     url: string;
   };
   type: ProjectType;
+  voice?: string;
 }
 
 export interface CreateProject {
   name: string;
   url: string;
   type: ProjectType;
+  voice?: string;
 }
 
 export interface Project {
@@ -274,5 +276,6 @@ export const createProjectReqMapper = (
       url: body.url,
     },
     type: body.type,
+    voice: body.voice,
   };
 };
