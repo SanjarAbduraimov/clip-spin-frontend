@@ -31,6 +31,7 @@ export enum ProjectType {
   text_audiogram = "text_audiogram",
   talking_head = "talking_head",
   professional = "professional",
+  veo3 = "veo3",
 }
 
 export enum ProjectStatus {
@@ -203,6 +204,7 @@ export const ProjectTypeLabels: Record<ProjectType, string> = {
   [ProjectType.text_audiogram]: "Text Audiogram",
   [ProjectType.talking_head]: "Talking Head",
   [ProjectType.professional]: "Professional",
+  [ProjectType.veo3]: "Veo3",
 };
 
 export const ProjectStatusColors: Record<ProjectStatus, BadgeProps["variant"]> =

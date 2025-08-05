@@ -12,6 +12,7 @@ import { VoiceDataMapper } from "@/modules/service/types/Service";
 import { useSubscriptionPlans } from "@/modules/subscription/hooks/useSubscription";
 import { PurchaseCredits } from "@/modules/subscription/ui/PurchaseCredits";
 
+import Veo3 from "@/assets/logo.png";
 import { useAuthContext } from "@/auth/hooks/useAuthContext";
 import {
   Form,
@@ -72,6 +73,7 @@ const formSchema = z.object({
     ProjectType.text_audiogram,
     ProjectType.talking_head,
     ProjectType.professional,
+    ProjectType.veo3,
   ]),
 });
 
@@ -156,7 +158,6 @@ const NewProject = ({ projectType }: NewProjectProps) => {
   }, [isHasVoiceType, form.watch]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     try {
       const { url, name } = values;
 
@@ -566,6 +567,61 @@ const NewProject = ({ projectType }: NewProjectProps) => {
                           </div>
                           <div
                             className={`absolute right-2 top-2 h-4 w-4 rounded-full ${field.value === ProjectType.talking_head ? "bg-primary" : "border-muted border"}`}
+                          />
+                        </label>
+                      </div>
+                      <div className="relative w-full md:min-w-[250px] md:max-w-[300px]">
+                        <input
+                          type="radio"
+                          id="veo3"
+                          className="peer sr-only"
+                          checked={field.value === ProjectType.veo3}
+                          onChange={() => field.onChange(ProjectType.veo3)}
+                          value={ProjectType.veo3}
+                        />
+                        <label
+                          htmlFor="veo3"
+                          className="flex cursor-pointer flex-col items-start rounded-lg border p-4 transition-all hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/5"
+                        >
+                          <div className="absolute right-2 top-8">
+                            <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                              {plan?.prices[ProjectType.veo3] || 0} Credits
+                            </span>
+                          </div>
+                          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                            <img src={Veo3} alt="" width={22} />
+                          </div>
+                          <div className="">
+                            <h3 className="flex items-center gap-1 text-lg font-medium">
+                              Veo3
+                              <Tooltip>
+                                <TooltipTrigger type="button">
+                                  <QuestionMarkCircledIcon
+                                    width={16}
+                                    height={16}
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent className="w-[200px]">
+                                  Generate videos with perfectly synced audio,
+                                  including sound effects, dialogue, and ambient
+                                  noise. Bring your stories to life with Veo 3.
+                                  <a
+                                    href="https://video.twimg.com/amplify_video/1925331863754752000/vid/avc1/640x360/hnIx9q0QttgnXsf8.mp4?tag=14"
+                                    target="_blank"
+                                    className="text-primary"
+                                    rel="noreferrer"
+                                  >
+                                    Example
+                                  </a>
+                                </TooltipContent>
+                              </Tooltip>
+                            </h3>
+                            <p className="text-muted-foreground text-sm">
+                              AI Video Generation with Realistic Sound
+                            </p>
+                          </div>
+                          <div
+                            className={`absolute right-2 top-2 h-4 w-4 rounded-full ${field.value === ProjectType.veo3 ? "bg-primary" : "border-muted border"}`}
                           />
                         </label>
                       </div>
