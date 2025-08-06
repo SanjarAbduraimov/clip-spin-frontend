@@ -12,8 +12,8 @@ import axiosInstance from "./axios";
 // Get all projects for the current user
 export const getProjects = async (page?: number, limit?: number) => {
   const params = new URLSearchParams();
-  if (page) params.append("page", page.toString());
-  if (limit) params.append("limit", limit.toString());
+  if (page) params.append("_page", page.toString());
+  if (limit) params.append("_limit", limit.toString());
 
   return axiosInstance
     .get<{
