@@ -30,7 +30,7 @@ const badgeVariants = cva(
           "bg-bg-success-primary border border-border-success text-text-success-secondary",
       },
       size: {
-        sm: "px-1.5 py-0.5 text-[8px]",
+        sm: "px-2 py-0.5 text-xs",
         md: "px-2.5 py-0.5 text-sm",
         lg: "px-3 py-1 text-md",
       },

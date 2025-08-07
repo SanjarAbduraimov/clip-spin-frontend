@@ -1,6 +1,7 @@
 import { Check, Loader2 } from "lucide-react";
 import { ReactNode } from "react";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/Alert";
 import { Badge } from "@/components/Badge";
 import { Project, ProjectProgress, ProjectStatus } from "@/types";
 
@@ -92,6 +93,22 @@ export const Workflow = ({ project }: WorkflowProps) => {
           </div>
         </div>
       </div>
+
+      {checkIsVideoGenerating(project) && (
+        <Alert className="mt-5 border-yellow-200 bg-yellow-50">
+          <Loader2
+            size={16}
+            className="h-4 w-4 animate-spin stroke-yellow-800"
+          />
+          <AlertTitle className="text-yellow-800">
+            Project is being processed!
+          </AlertTitle>
+          <AlertDescription className="text-yellow-700">
+            Your final video for &quot;{project.name}&quot; project is
+            generating. Check your project status in ~10 minutes.
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 };
