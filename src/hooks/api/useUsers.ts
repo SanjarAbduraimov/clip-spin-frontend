@@ -1,5 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
+
 import { getUsers, updateUserRole } from "@/api";
+
 import { toast } from "../useToast";
 
 export const useUsers = (page: number, limit: number) => {

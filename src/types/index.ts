@@ -118,6 +118,8 @@ export interface ProjectResponse {
     output?: {
       file_key: string;
     };
+    optimized_copy?: string;
+    hashtags?: string;
   };
 }
 
@@ -165,6 +167,8 @@ export interface Project {
   };
   outputUrl?: string;
   errorCause: ProjectErrorCause;
+  optimizedCopy?: string;
+  hashtags?: string;
 }
 
 export interface ProjectUpdateBody {
@@ -266,6 +270,8 @@ export function projectResponseToProject(
     outputUrl: projectResponse.output?.file_key
       ? `${config.apiBaseUrl}/files/${projectResponse.output.file_key}`
       : undefined,
+    optimizedCopy: projectResponse.optimized_copy,
+    hashtags: projectResponse.hashtags,
   };
 }
 

@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontal } from "lucide-react";
+import React, { useState } from "react";
+
 import { Button } from "../../components/Button/Button";
 import {
   DropdownMenu,
@@ -7,11 +10,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../components/DropdownMenu/DropdownMenu";
-import { MoreHorizontal } from "lucide-react";
 import DataTable from "../../components/Table/DataTable";
-import { User } from "../../types";
 import { useUsers, useUpdateUserRole } from "../../hooks/api/useUsers";
-import { useQueryClient } from "@tanstack/react-query";
+import { User } from "../../types";
 
 const Users: React.FC = () => {
   const [page, setPage] = useState(1);
