@@ -303,6 +303,77 @@ const ProjectDetail = () => {
                     </Alert>
                   )
                 )}
+
+                {/* Optimized Copy Section */}
+                {project.status === ProjectStatus.COMPLETED &&
+                  project.optimizedCopy && (
+                    <Alert className="mt-4 bg-bg-quaternary">
+                      <div className="mb-2 flex items-baseline justify-between">
+                        <AlertTitle className="text-lg">
+                          Optimized Copy
+                        </AlertTitle>
+                        <IconButton
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            navigator.clipboard.writeText(project.optimizedCopy || "");
+                            toast({
+                              title: "Copied!",
+                              description: "Optimized copy has been copied to clipboard",
+                            });
+                          }}
+                        >
+                          <Copy size={16} />
+                        </IconButton>
+                      </div>
+                      <div className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">
+                        {project.optimizedCopy}
+                      </div>
+                    </Alert>
+                  )}
+
+                {/* Hashtags Section */}
+                {project.status === ProjectStatus.COMPLETED &&
+                  project.hashtags &&
+                  project.hashtags.trim().length > 0 && (
+                    <Alert className="mt-4 bg-bg-quaternary">
+                      <div className="mb-2 flex items-baseline justify-between">
+                        <AlertTitle className="text-lg">Hashtags</AlertTitle>
+                        <IconButton
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const hashtagsText = project.hashtags
+                              ?.split(/[\s,#]+/)
+                              .filter((hashtag) => hashtag.trim().length > 0)
+                              .map((hashtag) => `#${hashtag.trim()}`)
+                              .join(" ");
+                            navigator.clipboard.writeText(hashtagsText || "");
+                            toast({
+                              title: "Copied!",
+                              description: "Hashtags have been copied to clipboard",
+                            });
+                          }}
+                        >
+                          <Copy size={16} />
+                        </IconButton>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {project.hashtags
+                          .split(/[\s,#]+/)
+                          .filter((hashtag) => hashtag.trim().length > 0)
+                          .map((hashtag) => (
+                            <Badge
+                              key={hashtag}
+                              variant="outline"
+                              className="border-blue-300 bg-blue-50 text-blue-600 dark:border-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
+                            >
+                              #{hashtag.trim()}
+                            </Badge>
+                          ))}
+                      </div>
+                    </Alert>
+                  )}
               </div>
             </div>
           )}

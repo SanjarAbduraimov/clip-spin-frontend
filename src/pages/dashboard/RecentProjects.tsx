@@ -1,7 +1,7 @@
+import { ColumnDef } from "@tanstack/react-table";
 import { Copy, Download, Filter, Search, Share2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ColumnDef } from "@tanstack/react-table";
 
 import { getProjectStatusLabel } from "@/modules/project/libs/getProjectStatusLabel";
 
