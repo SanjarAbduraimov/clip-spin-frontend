@@ -129,14 +129,14 @@ export interface CreateProjectReq {
     url: string;
   };
   type: ProjectType;
-  voice?: string;
+  avatar?: string;
 }
 
 export interface CreateProject {
   name: string;
   url: string;
   type: ProjectType;
-  voice?: string;
+  avatar?: string;
 }
 
 export interface Project {
@@ -212,13 +212,13 @@ export const ProjectTypeLabels: Record<ProjectType, string> = {
 };
 
 export const ProjectStatusColors: Record<ProjectStatus, BadgeProps["variant"]> =
-  {
-    [ProjectStatus.QUEUED]: "default",
-    [ProjectStatus.IN_PROGRESS]: "outline-warning",
-    [ProjectStatus.CANCELLED]: "outline-error",
-    [ProjectStatus.FAILED]: "outline-error",
-    [ProjectStatus.COMPLETED]: "outline-success",
-  };
+{
+  [ProjectStatus.QUEUED]: "default",
+  [ProjectStatus.IN_PROGRESS]: "outline-warning",
+  [ProjectStatus.CANCELLED]: "outline-error",
+  [ProjectStatus.FAILED]: "outline-error",
+  [ProjectStatus.COMPLETED]: "outline-success",
+};
 
 export const ProjectStatusLabels: Record<ProjectStatus, string> = {
   [ProjectStatus.QUEUED]: "Queued",
@@ -284,6 +284,6 @@ export const createProjectReqMapper = (
       url: body.url,
     },
     type: body.type,
-    voice: body.voice,
+    avatar: body.avatar,
   };
 };

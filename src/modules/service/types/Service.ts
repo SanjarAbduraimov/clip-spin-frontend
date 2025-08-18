@@ -11,22 +11,20 @@ export interface Service {
   type: ServiceType;
 }
 
-export interface VoiceData {
+export interface AvatarData {
   _id: string;
-  voice_id: string;
-  name: string;
+  avatar_id: string;
+  avatar_name: string;
   gender: "male" | "female" | string;
-  language: string;
-  preview_audio: string;
-  support_locale: boolean;
-  support_pause: boolean;
-  support_interactive_avatar: boolean;
-  emotion_support: boolean;
+  preview_image_url: string;
+  preview_video_url: string;
+  premium: boolean;
 }
-export interface VoiceDataMapper {
+export interface AvatarDataMapper {
   _id: string;
-  voice_id: string;
-  name: string;
+  avatar_id: string;
+  avatar_name: string;
   gender: "male" | "female" | string;
-  preview_audio: string;
+  preview_image_url: string;
+  preview_video_url: string;
 }
