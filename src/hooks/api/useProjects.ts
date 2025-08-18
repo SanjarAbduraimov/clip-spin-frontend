@@ -135,13 +135,13 @@ export const useCreateProjectFromUrl = () => {
       name,
       url,
       type,
-      voice,
+      avatar,
     }: {
       name: string;
       url: string;
       type: ProjectType;
-      voice?: string;
-    }) => createProjectFromUrl(name, url, type, voice),
+      avatar?: string;
+    }) => createProjectFromUrl(name, url, type, avatar),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
